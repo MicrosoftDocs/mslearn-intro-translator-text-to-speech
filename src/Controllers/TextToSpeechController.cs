@@ -44,7 +44,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
 
             try
             {
-                var result = await _textToSpeechService.SynthesisToFileAsync(request.Text);
+                var result = await _textToSpeechService.SynthesisToFileAsync(request.Text, request.ToLanguage);
                 return Ok(result);
             }
             catch (Exception e)

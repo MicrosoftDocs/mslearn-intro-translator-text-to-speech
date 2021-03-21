@@ -1,6 +1,7 @@
 using CognitiveServicesDemo.TextToSpeech.Models;
 using CognitiveServicesDemo.TextToSpeech.Repositories;
 using Microsoft.CognitiveServices.Speech;
+using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -10,12 +11,14 @@ using System.Threading.Tasks;
 
 namespace CognitiveServicesDemo.TextToSpeech.Services
 {
-    public class TextToSpeechService
+    public class TextToSpeechService : IDisposable
     {
         private readonly ILogger<TextToSpeechService> _logger;
         private readonly SpeechServiceOptions _options;
         private readonly BlobStorageRepository _blobStorageRepository;
-        //private TextToSpeechClient _client;
+        private SpeechSynthesizer _synthesizer;
+        private AudioConfig _streamConfig;
+        private AudioOutputStream _audioOutputStream;
 
         public TextToSpeechService(ILogger<TextToSpeechService> logger, SpeechServiceOptions options, BlobStorageRepository blobStorageRepository)
         {
@@ -24,35 +27,30 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _blobStorageRepository = blobStorageRepository ?? throw new ArgumentNullException(nameof(blobStorageRepository));
         }
 
-        public async Task<string> SynthesisToFileAsync(string text)
+        public async Task<string> SynthesisToFileAsync(string text, string targetLanguage = LanguageCodes.English)
         {
             string audioUrl = null;
-            // TODO: Initialize the client only once
-            var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
 
-            // Creates a speech synthesizer using the default speaker as audio output.
-            using (var synthesizer = new SpeechSynthesizer(config))
+            var synthesizer = GetSpeechSynthesizer(targetLanguage);
+            using (var result = await synthesizer.SpeakTextAsync(text))
             {
-                using (var result = await synthesizer.SpeakTextAsync(text))
+                if (result.Reason == ResultReason.SynthesizingAudioCompleted)
                 {
-                    if (result.Reason == ResultReason.SynthesizingAudioCompleted)
-                    {
-                        _logger.LogInformation($"Speech synthesis completed for text [{text}]");
-                        audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData);
-                    }
-                    else if (result.Reason == ResultReason.Canceled)
-                    {
-                        var cancellation = SpeechSynthesisCancellationDetails.FromResult(result);
+                    _logger.LogInformation($"Speech synthesis completed for text [{text}], and the audio was written to output stream");
+                    audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData);
+                }
+                else if (result.Reason == ResultReason.Canceled)
+                {
+                    var cancellation = SpeechSynthesisCancellationDetails.FromResult(result);
 
-                        if (cancellation.Reason == CancellationReason.Error)
-                        {
-                            throw new Exception($"Request Cancelled: ErrorCode={cancellation.ErrorCode}. ErrorDetails=[{cancellation.ErrorDetails}]");
-                        }
-                    }
-                    else
+                    if (cancellation.Reason == CancellationReason.Error)
                     {
-                        throw new Exception($"Received unexpected result: Reason={result.Reason}.");
+                        throw new Exception($"Request Cancelled: ErrorCode={cancellation.ErrorCode}. ErrorDetails=[{cancellation.ErrorDetails}]");
                     }
+                }
+                else
+                {
+                    throw new Exception($"Received unexpected result: Reason={result.Reason}.");
                 }
             }
 
@@ -62,6 +60,35 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             }
 
             return audioUrl;
+        }
+
+        public void Dispose()
+        {
+            _synthesizer.Dispose();
+            _audioOutputStream.Dispose();
+            _streamConfig.Dispose();
+        }
+
+        private SpeechSynthesizer GetSpeechSynthesizer(string language)
+        {
+            if (_synthesizer == null)
+            {
+                var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
+
+                // Specify voice and language
+                var voice = VoicesCatalog.NeuralVoicesPerLanguage.FirstOrDefault(x => x.Key.TwoLetterISOLanguageName.Equals(language, StringComparison.OrdinalIgnoreCase));
+                config.SpeechSynthesisVoiceName = voice.Value;
+                config.SpeechSynthesisLanguage = voice.Key.Name;
+
+                // Creates an audio out stream.
+                _audioOutputStream = AudioOutputStream.CreatePullStream();
+                _streamConfig = AudioConfig.FromStreamOutput(_audioOutputStream);
+
+                // Creates a speech synthesizer, reuse this instance in real world applications to reduce number of connections
+                _synthesizer = new SpeechSynthesizer(config, _streamConfig);
+            }
+
+            return _synthesizer;
         }
     }
 }
