@@ -32,12 +32,12 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
                 return BadRequest("Text is required");
             }
 
-            if (string.IsNullOrEmpty(request.FromLanguage))
+            if (string.IsNullOrEmpty(request.SourceLanguage))
             {
                 return BadRequest("FromLanguage is required");
             }
 
-            if (string.IsNullOrEmpty(request.ToLanguage))
+            if (string.IsNullOrEmpty(request.TargetLanguage))
             {
                 return BadRequest("ToLanguage is required");
             }
