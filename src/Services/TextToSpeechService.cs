@@ -64,9 +64,12 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 
         public void Dispose()
         {
-            _synthesizer.Dispose();
-            _audioOutputStream.Dispose();
-            _streamConfig.Dispose();
+            if (_synthesizer != null)
+            {
+                _synthesizer.Dispose();
+                _audioOutputStream.Dispose();
+                _streamConfig.Dispose();
+            }
         }
 
         private SpeechSynthesizer GetSpeechSynthesizer(string language)
@@ -80,7 +83,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 config.SpeechSynthesisVoiceName = voice.Value;
                 config.SpeechSynthesisLanguage = voice.Key.Name;
 
-                // Creates an audio out stream.
+                // Creates an audio output stream.
                 _audioOutputStream = AudioOutputStream.CreatePullStream();
                 _streamConfig = AudioConfig.FromStreamOutput(_audioOutputStream);
 

@@ -31,11 +31,18 @@ namespace CognitiveServicesDemo.TextToSpeech
             var blobStorageOptions = new BlobStorageOptions();
             Configuration.GetSection(BlobStorageOptions.BlobStorage).Bind(blobStorageOptions);
 
+            var translatorOptions = new TranslatorOptions();
+            Configuration.GetSection(TranslatorOptions.Translator).Bind(translatorOptions);
+
             services
                 .AddSingleton<SpeechServiceOptions>(x => speechServiceOptions)
                 .AddSingleton<BlobStorageOptions>(x => blobStorageOptions)
+                .AddSingleton<TranslatorOptions>(x => translatorOptions)
+                .AddSingleton<VoicesService>()
                 .AddScoped<TextToSpeechService>()
-                .AddScoped<BlobStorageRepository>();
+                .AddScoped<TranslatorService>()
+                .AddScoped<BlobStorageRepository>()
+                .AddHttpClient();
 
             services.AddControllersWithViews();
 
