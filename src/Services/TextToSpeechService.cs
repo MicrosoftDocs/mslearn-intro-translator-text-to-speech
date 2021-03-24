@@ -27,11 +27,11 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _blobStorageRepository = blobStorageRepository ?? throw new ArgumentNullException(nameof(blobStorageRepository));
         }
 
-        public async Task<string> SynthesisToFileAsync(string text, string targetLanguage = LanguageCodes.English)
+        public async Task<string> SynthesisToFileAsync(string text, string voiceName, string targetLanguage)
         {
             string audioUrl = null;
 
-            var synthesizer = GetSpeechSynthesizer(targetLanguage);
+            var synthesizer = GetSpeechSynthesizer(voiceName, targetLanguage);
             using (var result = await synthesizer.SpeakTextAsync(text))
             {
                 if (result.Reason == ResultReason.SynthesizingAudioCompleted)
@@ -72,16 +72,16 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             }
         }
 
-        private SpeechSynthesizer GetSpeechSynthesizer(string language)
+        private SpeechSynthesizer GetSpeechSynthesizer(string voice, string language)
         {
             if (_synthesizer == null)
             {
                 var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
 
                 // Specify voice and language
-                var voice = VoicesCatalog.NeuralVoicesPerLanguage.FirstOrDefault(x => x.Key.TwoLetterISOLanguageName.Equals(language, StringComparison.OrdinalIgnoreCase));
-                config.SpeechSynthesisVoiceName = voice.Value;
-                config.SpeechSynthesisLanguage = voice.Key.Name;
+                //var voice = VoicesCatalog.NeuralVoicesPerLanguage.FirstOrDefault(x => x.Key.TwoLetterISOLanguageName.Equals(language, StringComparison.OrdinalIgnoreCase));
+                config.SpeechSynthesisVoiceName = voice;
+                config.SpeechSynthesisLanguage = language;
 
                 // Creates an audio output stream.
                 _audioOutputStream = AudioOutputStream.CreatePullStream();
