@@ -9,5 +9,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Models
         public string SourceLanguage { get; set; }
 
         public string TargetLanguage { get; set; }
+
+        public string VoiceName { get; set; }
     }
 }
