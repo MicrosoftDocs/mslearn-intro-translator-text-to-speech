@@ -8,7 +8,7 @@ export const validate = (values) => {
     errors.targetLanguage = "Please select a target language.";
   }
 
-  if (!values.textInput) {
+  if (!values.text) {
     errors.textInput = "Please enter some text input.";
   }
   return errors;

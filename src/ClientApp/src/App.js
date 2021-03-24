@@ -25,21 +25,14 @@ export const App = () => {
     targetLanguage: "",
     text: "",
   };
-  const onSubmit = async (values) => {
+  const processTextToSpeech = async (values) => {
     const response = await convertSpeechToText(
       values.sourceLanguage,
       values.targetLanguage,
       values.text
     );
-    console.log(response);
-  };
-  const onPresetTextSelect = async (sourceLanguage, targetLanguage, text) => {
-    const response = await convertSpeechToText(
-      sourceLanguage,
-      targetLanguage,
-      text
-    );
-    console.log(response);
+    var audio = new Audio(response);
+    audio.play();
   };
   return (
     <>
@@ -48,7 +41,7 @@ export const App = () => {
       </nav>
       <main className="container">
         <Form
-          onSubmit={onSubmit}
+          onSubmit={(values) => processTextToSpeech(values)}
           initialValues={initialValues}
           validate={validate}
           render={({ handleSubmit, values, submitting }) => (
@@ -80,7 +73,6 @@ export const App = () => {
                   className="btn btn-primary"
                   type="submit"
                   disabled={submitting}
-                  onClick={handleSubmit}
                 >
                   Submit
                 </button>
@@ -88,15 +80,9 @@ export const App = () => {
               {values.sourceLanguage && values.targetLanguage
                 ? presetTextValues[values.sourceLanguage].map((text) => (
                     <span
-                      onClick={() =>
-                        onPresetTextSelect(
-                          values.sourceLanguage,
-                          values.targetLanguage,
-                          text
-                        )
-                      }
+                      onClick={() => processTextToSpeech({ ...values, text })}
                       key={text}
-                      class="badge badge-pill badge-secondary"
+                      className="badge badge-pill badge-secondary"
                     >
                       {text}
                     </span>
