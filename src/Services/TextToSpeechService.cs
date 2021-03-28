@@ -79,7 +79,6 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
 
                 // Specify voice and language
-                //var voice = VoicesCatalog.NeuralVoicesPerLanguage.FirstOrDefault(x => x.Key.TwoLetterISOLanguageName.Equals(language, StringComparison.OrdinalIgnoreCase));
                 config.SpeechSynthesisVoiceName = voice;
                 config.SpeechSynthesisLanguage = language;
 

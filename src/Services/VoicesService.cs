@@ -5,8 +5,11 @@ using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace CognitiveServicesDemo.TextToSpeech.Services
@@ -24,24 +27,37 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public async Task<List<string>> GetLocales()
+        public async Task<IList<LocaleInfo>> GetLocales()
         {
             var voices = await GetVoices();
 
-            return voices
+            var locales = voices
                 .GroupBy(v => v.Locale)
                 .Select(g => g.First().Locale)
                 .ToList();
+
+            return locales.Select(l => new LocaleInfo(CultureInfo.GetCultureInfo(l))).ToList();
         }
 
-        public async Task<List<string>> GetVoices(string locale)
+        public async Task<IList<VoiceDetail>> GetVoices(string locale)
         {
             var voices = await GetVoices();
 
-            return voices
-                .Where(v => v.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase))
-                .Select(v => v.ShortName)
-                .ToList();
+            var voicesPerLocale = voices.Where(v => v.Locale.Equals(locale, StringComparison.OrdinalIgnoreCase));
+            _logger.LogInformation($"Found {voicesPerLocale.Count()} voices for locale {locale}");
+
+            return voicesPerLocale
+                .Select(v => new VoiceDetail
+                {
+                    VoiceShortName = v.ShortName,
+                    VoiceType = Enum.GetName(typeof(SynthesisVoiceType), v.VoiceType),
+                    DisplayName = GetVoiceDisplayName(v),
+                    Styles = GetStyles(v.StyleList),
+                    IsStyleDegreeSupported = VoiceAdjustmentsCatalog.StyleDegreeSupportedVoices.Contains(v.ShortName),
+                    Roles = GetRoles(v.ShortName),
+                    RateOptions = VoiceAdjustmentsCatalog.RateValues,
+                    PitchOptions = VoiceAdjustmentsCatalog.PitchValues
+                }).ToList();
         }
 
         public async Task<bool> IsValidLanguage(string language)
@@ -49,6 +65,14 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             var voices = await GetVoices();
             var match = voices.FirstOrDefault(x => x.Locale.StartsWith(language));
             return match != null;
+        }
+
+        public void Dispose()
+        {
+            if (_synthesizer != null)
+            {
+                _synthesizer.Dispose();
+            }
         }
 
         private async Task<IReadOnlyCollection<VoiceInfo>> GetVoices()
@@ -59,18 +83,12 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 using (var result = await synthesizer.GetVoicesAsync())
                 {
                     _voices = result.Voices;
+
+                    _logger.LogInformation($"Received {_voices.Count} from Speech Service");
                 }
             }
-            
-            return _voices;
-        }
 
-        public void Dispose()
-        {
-            if (_synthesizer != null)
-            {
-                _synthesizer.Dispose();
-            }
+            return _voices;
         }
 
         private SpeechSynthesizer GetSpeechSynthesizer()
@@ -85,5 +103,58 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 
             return _synthesizer;
         }
+
+        private string GetVoiceDisplayName(VoiceInfo voiceInfo)
+        {
+            var voiceName = voiceInfo.ShortName;
+            var displayName = voiceName.Substring(voiceName.LastIndexOf("-") + 1);
+
+            if (voiceInfo.VoiceType == SynthesisVoiceType.OnlineNeural || voiceInfo.VoiceType == SynthesisVoiceType.OfflineNeural)
+            {
+                displayName.Replace("Neural", " (Neural)");
+            }
+
+            return displayName;
+        }
+
+        private IList<RoleInfo> GetRoles(string voice)
+        {
+            if (string.IsNullOrEmpty(voice)) return new List<RoleInfo>();
+
+            VoiceAdjustmentsCatalog.RolesPerVoice.TryGetValue(voice, out var roles);
+            if (roles == null) return new List<RoleInfo>();
+
+            return roles.Select(r => new RoleInfo
+            {
+                RoleName = r,
+                DisplayName = GetRoleDisplayName(r)
+            }).ToList();
+        }
+
+        private string GetRoleDisplayName(string value)
+        {
+            Regex r = new Regex("(?<=[a-z])(?<x>[A-Z])|(?<=.)(?<x>[A-Z])(?=[a-z])");
+            return r.Replace(value.ToString(), " ${x}");
+        }
+
+        private IList<StyleInfo> GetStyles(string[] styleList)
+        {
+            if (!styleList.Any()) return new List<StyleInfo>();
+
+            return styleList?.Where(s => !string.IsNullOrEmpty(s))
+                .Select(s => new StyleInfo
+                {
+                    StyleName = s,
+                    DisplayName = GetStyleDisplayName(s)
+                }).ToList();
+        }
+
+        private string GetStyleDisplayName(string style)
+        {
+            VoiceAdjustmentsCatalog.StylesDisplayName.TryGetValue(style, out var displayName);
+
+            return displayName ?? style.First().ToString().ToUpper() + style.Substring(1);
+        }
+
     }
 }
