@@ -17,18 +17,21 @@ namespace CognitiveServicesDemo.TextToSpeech.Repositories
 
         public BlobStorageRepository(ILogger<BlobStorageRepository> logger, BlobStorageOptions options)
         {
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
         }
 
-        public async Task<string> UploadFileContent(byte[] data)
+        public async Task<string> UploadFileContent(byte[] data, string fileName)
         {
             var client = GetContainerClient();
             using (var stream = new MemoryStream(data, writable: false))
             {
-                //TODO: Pass file name as parameter
-                var blobName = $"{Guid.NewGuid().ToString()}.wav";
-                var response = await client.UploadBlobAsync(blobName, stream);
-                return $"{client.Uri.ToString()}/{blobName}";
+                var response = await client.UploadBlobAsync(fileName, stream);
+
+                var blobUrl = $"{client.Uri.ToString()}/{fileName}";
+                _logger.LogInformation($"Successfully uploaded file to {blobUrl}");
+
+                return blobUrl;
             }
         }
 

@@ -14,14 +14,14 @@ using System.Threading.Tasks;
 
 namespace CognitiveServicesDemo.TextToSpeech.Services
 {
-    public class VoicesService : IDisposable
+    public class VoiceInformationService : IDisposable
     {
         private readonly ILogger<TextToSpeechService> _logger;
         private readonly SpeechServiceOptions _options;
         private IReadOnlyCollection<VoiceInfo> _voices;
         private SpeechSynthesizer _synthesizer;
 
-        public VoicesService(ILogger<TextToSpeechService> logger, SpeechServiceOptions options)
+        public VoiceInformationService(ILogger<TextToSpeechService> logger, SpeechServiceOptions options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
@@ -111,7 +111,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 
             if (voiceInfo.VoiceType == SynthesisVoiceType.OnlineNeural || voiceInfo.VoiceType == SynthesisVoiceType.OfflineNeural)
             {
-                displayName.Replace("Neural", " (Neural)");
+                displayName = displayName.Replace("Neural", " (Neural)");
             }
 
             return displayName;

@@ -18,9 +18,9 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
         private readonly ILogger<TextToSpeechController> _logger;
         private readonly TextToSpeechService _textToSpeechService;
         private readonly TranslatorService _translatorService;
-        private readonly VoicesService _voicesService;
+        private readonly VoiceInformationService _voicesService;
 
-        public TextToSpeechController(ILogger<TextToSpeechController> logger, TextToSpeechService textToSpeechService, TranslatorService translatorService, VoicesService voicesService)
+        public TextToSpeechController(ILogger<TextToSpeechController> logger, TextToSpeechService textToSpeechService, TranslatorService translatorService, VoiceInformationService voicesService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _textToSpeechService = textToSpeechService ?? throw new ArgumentNullException(nameof(textToSpeechService));

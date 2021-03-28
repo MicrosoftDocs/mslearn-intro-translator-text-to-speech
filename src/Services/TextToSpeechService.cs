@@ -13,6 +13,8 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 {
     public class TextToSpeechService : IDisposable
     {
+        private const string FileExtension = "wav";
+
         private readonly ILogger<TextToSpeechService> _logger;
         private readonly SpeechServiceOptions _options;
         private readonly BlobStorageRepository _blobStorageRepository;
@@ -37,7 +39,8 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 if (result.Reason == ResultReason.SynthesizingAudioCompleted)
                 {
                     _logger.LogInformation($"Speech synthesis completed for text [{text}], and the audio was written to output stream");
-                    audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData);
+                    var fileName = $"{Guid.NewGuid().ToString()}.{FileExtension}";
+                    audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData, fileName);
                 }
                 else if (result.Reason == ResultReason.Canceled)
                 {
