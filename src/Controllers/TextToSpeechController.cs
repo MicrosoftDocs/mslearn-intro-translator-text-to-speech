@@ -17,12 +17,14 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
     {
         private readonly ILogger<TextToSpeechController> _logger;
         private readonly TextToSpeechService _textToSpeechService;
-        private readonly VoicesService _voicesService;
+        private readonly TranslatorService _translatorService;
+        private readonly VoiceInformationService _voicesService;
 
-        public TextToSpeechController(ILogger<TextToSpeechController> logger, TextToSpeechService textToSpeechService, VoicesService voicesService)
+        public TextToSpeechController(ILogger<TextToSpeechController> logger, TextToSpeechService textToSpeechService, TranslatorService translatorService, VoiceInformationService voicesService)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _textToSpeechService = textToSpeechService ?? throw new ArgumentNullException(nameof(textToSpeechService));
+            _translatorService = translatorService ?? throw new ArgumentNullException(nameof(translatorService));
             _voicesService = voicesService ?? throw new ArgumentNullException(nameof(voicesService));
         }
 
@@ -55,19 +57,25 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
                 return BadRequest("Text is required");
             }
 
-            if (string.IsNullOrEmpty(request.SourceLanguage))
-            {
-                return BadRequest("FromLanguage is required");
-            }
-
             if (string.IsNullOrEmpty(request.TargetLanguage))
             {
                 return BadRequest("TargetLanguage is required");
             }
 
+            if (string.IsNullOrEmpty(request.VoiceName))
+            {
+                return BadRequest("VoiceName is required");
+            }
+
             try
             {
-                var result = await _textToSpeechService.SynthesisToFileAsync(request.Text, request.TargetLanguage);
+                // Translate input text
+                var translationResult = await _translatorService.Translate(request.Text, request.TargetLanguage);
+                var translatedText = translationResult.Translations.FirstOrDefault().Text;
+
+                // Send to speech service
+                var result = await _textToSpeechService.SynthesisToFileAsync(translatedText, request.VoiceName, request.TargetLanguage);
+
                 return Ok(result);
             }
             catch (Exception e)

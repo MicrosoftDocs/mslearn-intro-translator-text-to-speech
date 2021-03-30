@@ -13,6 +13,8 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 {
     public class TextToSpeechService : IDisposable
     {
+        private const string FileExtension = "wav";
+
         private readonly ILogger<TextToSpeechService> _logger;
         private readonly SpeechServiceOptions _options;
         private readonly BlobStorageRepository _blobStorageRepository;
@@ -27,17 +29,18 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _blobStorageRepository = blobStorageRepository ?? throw new ArgumentNullException(nameof(blobStorageRepository));
         }
 
-        public async Task<string> SynthesisToFileAsync(string text, string targetLanguage = LanguageCodes.English)
+        public async Task<string> SynthesisToFileAsync(string text, string voiceName, string targetLanguage)
         {
             string audioUrl = null;
 
-            var synthesizer = GetSpeechSynthesizer(targetLanguage);
+            var synthesizer = GetSpeechSynthesizer(voiceName, targetLanguage);
             using (var result = await synthesizer.SpeakTextAsync(text))
             {
                 if (result.Reason == ResultReason.SynthesizingAudioCompleted)
                 {
                     _logger.LogInformation($"Speech synthesis completed for text [{text}], and the audio was written to output stream");
-                    audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData);
+                    var fileName = $"{Guid.NewGuid().ToString()}.{FileExtension}";
+                    audioUrl = await _blobStorageRepository.UploadFileContent(result.AudioData, fileName);
                 }
                 else if (result.Reason == ResultReason.Canceled)
                 {
@@ -72,16 +75,15 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             }
         }
 
-        private SpeechSynthesizer GetSpeechSynthesizer(string language)
+        private SpeechSynthesizer GetSpeechSynthesizer(string voice, string language)
         {
             if (_synthesizer == null)
             {
                 var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
 
                 // Specify voice and language
-                var voice = VoicesCatalog.NeuralVoicesPerLanguage.FirstOrDefault(x => x.Key.TwoLetterISOLanguageName.Equals(language, StringComparison.OrdinalIgnoreCase));
-                config.SpeechSynthesisVoiceName = voice.Value;
-                config.SpeechSynthesisLanguage = voice.Key.Name;
+                config.SpeechSynthesisVoiceName = voice;
+                config.SpeechSynthesisLanguage = language;
 
                 // Creates an audio output stream.
                 _audioOutputStream = AudioOutputStream.CreatePullStream();
