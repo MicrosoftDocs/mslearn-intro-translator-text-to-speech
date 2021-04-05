@@ -1,7 +1,7 @@
 # Docs for the Azure Web Apps Deploy action: https://github.com/Azure/webapps-deploy
 # More GitHub Actions for Azure: https://github.com/Azure/actions
 
-name: TextToSpeechTranslator - Build and deploy
+name: TranslatorTextToSpeech - Build and deploy
 
 on:
     push:
@@ -12,7 +12,7 @@ on:
             - main
 
 env:
-    OUTPUT_NAME: TextToSpeechTranslator
+    OUTPUT_NAME: TranslatorTextToSpeech
     AZURE_STORAGE_CONTAINER_NAME: build-artifacts
 
 jobs:
