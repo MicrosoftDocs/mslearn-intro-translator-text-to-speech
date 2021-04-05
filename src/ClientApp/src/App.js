@@ -17,9 +17,10 @@ export const App = () => {
     locales: [],
     text: "",
   };
-  const processTextToSpeech = async (targetLocales, text) => {
+  const processTextToSpeech = async (targetLocales, voice, text) => {
     const response = await synthesizeText(
       targetLocales.map((l) => l.language),
+      voice,
       text
     );
     var audio = new Audio(response);
@@ -71,7 +72,11 @@ export const App = () => {
                 ...arrayMutators,
               }}
               onSubmit={(values) => {
-                processTextToSpeech(values.locales, values.text);
+                processTextToSpeech(
+                  values.locales,
+                  values.voice.voiceShortName,
+                  values.text
+                );
               }}
               initialValues={initialValues}
               validate={validate}

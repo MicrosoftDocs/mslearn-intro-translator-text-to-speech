@@ -8,7 +8,7 @@ export const getVoicesForLocale = async (locale) => {
   return await response.json();
 };
 
-export const synthesizeText = async (targetLanguages, text) => {
+export const synthesizeText = async (targetLanguages, voiceName, text) => {
   const response = await fetch("speech/synthesizer", {
     method: "POST",
     headers: {
@@ -16,6 +16,7 @@ export const synthesizeText = async (targetLanguages, text) => {
     },
     body: JSON.stringify({
       targetLanguage: targetLanguages[0],
+      voiceName,
       text,
     }),
   });
