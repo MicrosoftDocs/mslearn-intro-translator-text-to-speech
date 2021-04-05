@@ -15,8 +15,11 @@ export const App = () => {
     locales: [],
     text: "",
   };
-  const processTextToSpeech = async (targetLanguage, text) => {
-    const response = await synthesizeText(targetLanguage, text);
+  const processTextToSpeech = async (targetLocales, text) => {
+    const response = await synthesizeText(
+      targetLocales.map((l) => l.language),
+      text
+    );
     var audio = new Audio(response);
     audio.play();
   };
@@ -51,9 +54,9 @@ export const App = () => {
               mutators={{
                 ...arrayMutators,
               }}
-              onSubmit={(values) =>
-                processTextToSpeech(values.locales, values.text)
-              }
+              onSubmit={(values) => {
+                processTextToSpeech(values.locales, values.text);
+              }}
               initialValues={initialValues}
               validate={validate}
               render={({ handleSubmit, values, submitting }) => (
@@ -74,6 +77,20 @@ export const App = () => {
                       errorMessage="Please enter some text"
                       disabled={submitting}
                     />
+                    {values.locales && values.locales.length > 0 ? (
+                      <div className="row">
+                        <div className="col">
+                          {values.locales.map(({ value, label }) => (
+                            <span
+                              key={value}
+                              className="badge badge-pill badge-secondary"
+                            >
+                              {label}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    ) : null}
                     <div className="row">
                       <div className="col">
                         {presetTextValues.map((text) => (

@@ -14,6 +14,7 @@ on:
 env:
     OUTPUT_NAME: TranslatorTextToSpeech
     AZURE_STORAGE_CONTAINER_NAME: build-artifacts
+    AZURE_APP_NAME: mslearn-text-to-speech
 
 jobs:
     build-and-deploy:
@@ -42,7 +43,7 @@ jobs:
               if: success() && github.event_name == 'pull_request'
               uses: azure/webapps-deploy@v2
               with:
-                  app-name: "formrecognizer-showcase"
+                  app-name: ${{env.AZURE_APP_NAME}}
                   slot-name: "staging"
                   publish-profile: ${{ secrets.AzureAppService_Staging }}
                   package: ${{env.DOTNET_ROOT}}/output
@@ -51,7 +52,7 @@ jobs:
               if: success() && github.event_name != 'pull_request'
               uses: azure/webapps-deploy@v2
               with:
-                  app-name: "formrecognizer-showcase"
+                  app-name: ${{env.AZURE_APP_NAME}}
                   slot-name: "production"
                   publish-profile: ${{ secrets.AzureAppService_Production }}
                   package: ${{env.DOTNET_ROOT}}/output

@@ -29,6 +29,7 @@ export const LocaleSelect = ({
               options={locales.map((l) => ({
                 value: l.locale,
                 label: l.displayName,
+                ...l,
               }))}
               className={className({
                 "locale-select": true,
