@@ -38,7 +38,7 @@ namespace CognitiveServicesDemo.TextToSpeech
                 .AddSingleton<SpeechServiceOptions>(x => speechServiceOptions)
                 .AddSingleton<BlobStorageOptions>(x => blobStorageOptions)
                 .AddSingleton<TranslatorOptions>(x => translatorOptions)
-                .AddSingleton<VoicesService>()
+                .AddSingleton<VoiceInformationService>()
                 .AddScoped<TextToSpeechService>()
                 .AddScoped<TranslatorService>()
                 .AddScoped<BlobStorageRepository>()
