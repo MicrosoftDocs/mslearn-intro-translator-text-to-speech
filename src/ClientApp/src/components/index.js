@@ -1,2 +1,1 @@
-export * from "./LanguageSelect";
-export * from "./TextInput";
+export * from "./forms";

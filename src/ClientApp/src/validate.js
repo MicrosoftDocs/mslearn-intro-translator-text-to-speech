@@ -1,11 +1,7 @@
 export const validate = (values) => {
   const errors = {};
-  if (!values.sourceLanguage) {
-    errors.sourceLanguage = "Please select a source language.";
-  }
-
-  if (!values.targetLanguage) {
-    errors.targetLanguage = "Please select a target language.";
+  if (!values.locales || values.locales.length === 0) {
+    errors.locales = "You need to select at lest one target language.";
   }
 
   if (!values.text) {

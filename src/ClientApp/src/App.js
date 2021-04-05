@@ -1,96 +1,115 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import { validate } from "./validate";
-import { LanguageSelect, TextInput } from "./components";
-import { supportedLanguages, presetTextValues } from "./data";
+import arrayMutators from "final-form-arrays";
 
-const convertSpeechToText = async (sourceLanguage, targetLanguage, text) => {
-  const response = await fetch("speech/synthesizer", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      sourceLanguage,
-      targetLanguage,
-      text,
-    }),
-  });
-  return await response.text();
-};
+// local imports
+import "./App.css";
+import { validate } from "./validate";
+import { LocaleSelect, TextInput } from "./components";
+import { presetTextValues } from "./data";
+import { synthesizeText, getLocales } from "./api";
 
 export const App = () => {
+  const [availableLocales, setAvailableLocales] = useState([]);
   const initialValues = {
-    sourceLanguage: "",
-    targetLanguage: "",
+    locales: [],
     text: "",
   };
-  const processTextToSpeech = async (values) => {
-    const response = await convertSpeechToText(
-      values.sourceLanguage,
-      values.targetLanguage,
-      values.text
-    );
+  const processTextToSpeech = async (targetLanguage, text) => {
+    const response = await synthesizeText(targetLanguage, text);
     var audio = new Audio(response);
     audio.play();
   };
+  useEffect(() => {
+    const getAndSetAvailableLocales = async () => {
+      const response = await getLocales();
+      setAvailableLocales(response);
+    };
+    getAndSetAvailableLocales();
+  }, []);
+
+  if (!availableLocales || availableLocales.length === 0) {
+    return null;
+  }
   return (
     <>
-      <nav className="container navbar navbar-light">
-        <span className="navbar-brand ">Text to speech</span>
+      <nav className="container-fluid navbar navbar-light">
+        <span className="navbar-brand ">Translator & Text to Speech</span>
       </nav>
-      <main className="container">
-        <Form
-          onSubmit={(values) => processTextToSpeech(values)}
-          initialValues={initialValues}
-          validate={validate}
-          render={({ handleSubmit, values, submitting }) => (
-            <>
-              <form aria-label="Text to Speech" onSubmit={handleSubmit}>
-                <LanguageSelect
-                  name="sourceLanguage"
-                  label="Source language"
-                  placeholder="Select source language"
-                  errorMessage="Please select a source language."
-                  languages={supportedLanguages}
-                  disabled={submitting}
-                />
-                <LanguageSelect
-                  name="targetLanguage"
-                  label="Target language"
-                  placeholder="Select target language"
-                  errorMessage="Please select a target language."
-                  languages={supportedLanguages}
-                  disabled={submitting}
-                />
-                <TextInput
-                  name="text"
-                  label="Text"
-                  errorMessage="Please enter some text"
-                  disabled={submitting}
-                />
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  Submit
-                </button>
-              </form>
-              {values.sourceLanguage && values.targetLanguage
-                ? presetTextValues[values.sourceLanguage].map((text) => (
-                    <span
-                      onClick={() => processTextToSpeech({ ...values, text })}
-                      key={text}
-                      className="badge badge-pill badge-secondary"
-                    >
-                      {text}
-                    </span>
-                  ))
-                : null}
-            </>
-          )}
-        />
+      <main className="container-fluid">
+        <header>
+          <p>
+            Write an announcement or select a pre-made announcement, and select
+            the languages to translate your messages into. Translator service
+            will translate your message into new languages, and text-to-speech
+            will read out your message in the selected languages.
+          </p>
+        </header>
+        <div className="row">
+          <div className="col-6">
+            <Form
+              mutators={{
+                ...arrayMutators,
+              }}
+              onSubmit={(values) =>
+                processTextToSpeech(values.locales, values.text)
+              }
+              initialValues={initialValues}
+              validate={validate}
+              render={({ handleSubmit, values, submitting }) => (
+                <>
+                  <form aria-label="Text to Speech" onSubmit={handleSubmit}>
+                    <LocaleSelect
+                      name="locales"
+                      label="Target locales"
+                      placeholder="Select some target locales"
+                      errorMessage="Please select a target language."
+                      locales={availableLocales}
+                      disabled={submitting}
+                      selectedLocales={values.locales}
+                    />
+                    <TextInput
+                      name="text"
+                      label="Text"
+                      errorMessage="Please enter some text"
+                      disabled={submitting}
+                    />
+                    <div className="row">
+                      <div className="col">
+                        {presetTextValues.map((text) => (
+                          <span
+                            onClick={() =>
+                              processTextToSpeech(
+                                values.targetLanguage,
+                                values.text
+                              )
+                            }
+                            key={text}
+                            className="badge badge-pill badge-secondary"
+                          >
+                            {text}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col">
+                        <button
+                          className="btn btn-primary"
+                          type="submit"
+                          disabled={submitting}
+                        >
+                          Translate
+                        </button>
+                      </div>
+                    </div>
+                  </form>
+                </>
+              )}
+            />
+          </div>
+          <div className="col-6">Output</div>
+        </div>
       </main>
     </>
   );

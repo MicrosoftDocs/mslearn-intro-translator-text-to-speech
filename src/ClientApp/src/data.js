@@ -9,7 +9,7 @@ export const supportedLanguages = [
   },
 ];
 
-export const presetTextValues = {
-  en: ["Hello everyone, how are you today?"],
-  es: ["Buenas todos, como estan?"],
-};
+export const presetTextValues = [
+  "Hello everyone, how are you today?",
+  "Would you like to go for a walk?",
+];

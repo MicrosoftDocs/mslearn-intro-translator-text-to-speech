@@ -18,7 +18,9 @@ export const TextInput = ({ name, label, errorMessage, disabled }) => (
               "is-invalid": error && touched,
             })}
           />
-          <div className="invalid-feedback">{errorMessage}</div>
+          {error && touched ? (
+            <div className="invalid-feedback">{errorMessage}</div>
+          ) : null}
         </>
       )}
     </Field>
