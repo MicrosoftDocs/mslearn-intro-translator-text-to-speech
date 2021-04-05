@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Form } from "react-final-form";
-import arrayMutators from "final-form-arrays";
 
 // local imports
 import "./App.css";
