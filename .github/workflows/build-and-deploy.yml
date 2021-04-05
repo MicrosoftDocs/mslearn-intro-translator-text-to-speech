@@ -4,70 +4,70 @@
 name: TranslatorTextToSpeech - Build and deploy
 
 on:
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
 
 env:
-    OUTPUT_NAME: TranslatorTextToSpeech
-    AZURE_STORAGE_CONTAINER_NAME: build-artifacts
-    AZURE_APP_NAME: mslearn-text-to-speech
+  OUTPUT_NAME: TranslatorTextToSpeech
+  AZURE_STORAGE_CONTAINER_NAME: build-artifacts
+  AZURE_APP_NAME: mslearn-text-to-speech
 
 jobs:
-    build-and-deploy:
-        runs-on: ubuntu-latest
+  build-and-deploy:
+    runs-on: ubuntu-latest
 
-        steps:
-            - uses: actions/checkout@master
+    steps:
+      - uses: actions/checkout@master
 
-            - name: Set up .NET Core
-              uses: actions/setup-dotnet@v1
-              with:
-                  dotnet-version: "5.0.103"
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "5.0.103"
 
-            - name: Use Node.js ${{ matrix.node-version }}
-              uses: actions/setup-node@v1
-              with:
-                  node-version: ${{ matrix.node-version }}
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
 
-            - name: Build with dotnet
-              run: dotnet build --configuration Release src
+      - name: Build with dotnet
+        run: dotnet build --configuration Release src
 
-            - name: dotnet publish
-              run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/output src
+      - name: dotnet publish
+        run: dotnet publish -c Release -o ${{env.DOTNET_ROOT}}/output src
 
-            - name: Deploy to staging slot
-              if: success() && github.event_name == 'pull_request'
-              uses: azure/webapps-deploy@v2
-              with:
-                  app-name: ${{env.AZURE_APP_NAME}}
-                  slot-name: "staging"
-                  publish-profile: ${{ secrets.AzureAppService_Staging }}
-                  package: ${{env.DOTNET_ROOT}}/output
+      - name: Deploy to staging slot
+        if: success() && github.event_name == 'pull_request'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{env.AZURE_APP_NAME}}
+          slot-name: "staging"
+          publish-profile: ${{ secrets.AzureAppService_Staging }}
+          package: ${{env.DOTNET_ROOT}}/output
 
-            - name: Deploy to production slot
-              if: success() && github.event_name != 'pull_request'
-              uses: azure/webapps-deploy@v2
-              with:
-                  app-name: ${{env.AZURE_APP_NAME}}
-                  slot-name: "production"
-                  publish-profile: ${{ secrets.AzureAppService_Production }}
-                  package: ${{env.DOTNET_ROOT}}/output
+      - name: Deploy to production slot
+        if: success() && github.event_name != 'pull_request'
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: ${{env.AZURE_APP_NAME}}
+          slot-name: "production"
+          publish-profile: ${{ secrets.AzureAppService_Production }}
+          package: ${{env.DOTNET_ROOT}}/output
 
-            - name: Zip output
-              if: success() && github.event_name != 'pull_request'
-              working-directory: ${{env.DOTNET_ROOT}}/output
-              run: sudo zip -r ${{ github.workspace }}/${{env.OUTPUT_NAME}}.zip .
+      - name: Zip output
+        if: success() && github.event_name != 'pull_request'
+        working-directory: ${{env.DOTNET_ROOT}}/output
+        run: sudo zip -r ${{ github.workspace }}/${{env.OUTPUT_NAME}}.zip .
 
-            - name: Deploy artifact to Azure Storage
-              if: success() && github.event_name != 'pull_request'
-              uses: bacongobbler/azure-blob-storage-upload@v1.1.1
-              with:
-                  source_dir: ${{ github.workspace }}
-                  sync: false
-                  container_name: ${{env.AZURE_STORAGE_CONTAINER_NAME}}
-                  connection_string: ${{ secrets.ARTIFACTS_AZURE_STORAGE_CONNECTION_STRING }}
-                  extra_args: "--pattern ${{env.OUTPUT_NAME}}.zip"
+      - name: Deploy artifact to Azure Storage
+        if: success() && github.event_name != 'pull_request'
+        uses: bacongobbler/azure-blob-storage-upload@v1.1.1
+        with:
+          source_dir: ${{ github.workspace }}
+          sync: false
+          container_name: ${{env.AZURE_STORAGE_CONTAINER_NAME}}
+          connection_string: ${{ secrets.ARTIFACTS_AZURE_STORAGE_CONNECTION_STRING }}
+          extra_args: "--pattern ${{env.OUTPUT_NAME}}.zip"
