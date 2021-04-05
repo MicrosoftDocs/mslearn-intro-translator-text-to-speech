@@ -3,8 +3,8 @@ export const getLocales = async () => {
   return await response.json();
 };
 
-export const getVoices = async () => {
-  const response = await fetch("speech/voices");
+export const getVoicesForLocale = async (locale) => {
+  const response = await fetch(`speech/voices?locale=${locale}`);
   return await response.json();
 };
 

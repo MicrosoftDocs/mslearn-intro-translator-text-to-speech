@@ -8,7 +8,7 @@ export const LocaleSelect = ({
   label,
   placeholder,
   errorMessage,
-  locales,
+  options,
   disabled,
 }) => {
   return (
@@ -26,11 +26,7 @@ export const LocaleSelect = ({
               onChange={(selectedLocale) => {
                 input.onChange(selectedLocale);
               }}
-              options={locales.map((l) => ({
-                value: l.locale,
-                label: l.displayName,
-                ...l,
-              }))}
+              options={options}
               className={className({
                 "locale-select": true,
                 "is-invalid": error && touched,

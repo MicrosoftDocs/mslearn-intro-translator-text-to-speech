@@ -5,12 +5,14 @@ import arrayMutators from "final-form-arrays";
 // local imports
 import "./App.css";
 import { validate } from "./validate";
-import { LocaleSelect, TextInput } from "./components";
+import { LocaleSelect, TextInput, VoiceSelect } from "./components";
 import { presetTextValues } from "./data";
-import { synthesizeText, getLocales } from "./api";
+import { synthesizeText, getLocales, getVoicesForLocale } from "./api";
 
 export const App = () => {
+  const [selectedLocale, setSelectedLocale] = useState();
   const [availableLocales, setAvailableLocales] = useState([]);
+  const [availableVoices, setAvailableVoices] = useState([]);
   const initialValues = {
     locales: [],
     text: "",
@@ -23,13 +25,27 @@ export const App = () => {
     var audio = new Audio(response);
     audio.play();
   };
+
   useEffect(() => {
     const getAndSetAvailableLocales = async () => {
       const response = await getLocales();
       setAvailableLocales(response);
+      setSelectedLocale(response[0]);
     };
     getAndSetAvailableLocales();
   }, []);
+
+  useEffect(() => {
+    const getAndSetVoices = async () => {
+      if (!selectedLocale) {
+        setAvailableVoices(undefined);
+        return;
+      }
+      const voices = await getVoicesForLocale(selectedLocale.locale);
+      setAvailableVoices(voices);
+    };
+    getAndSetVoices();
+  }, [selectedLocale]);
 
   if (!availableLocales || availableLocales.length === 0) {
     return null;
@@ -62,15 +78,40 @@ export const App = () => {
               render={({ handleSubmit, values, submitting }) => (
                 <>
                   <form aria-label="Text to Speech" onSubmit={handleSubmit}>
-                    <LocaleSelect
-                      name="locales"
-                      label="Target locales"
-                      placeholder="Select some target locales"
-                      errorMessage="Please select a target language."
-                      locales={availableLocales}
-                      disabled={submitting}
-                      selectedLocales={values.locales}
-                    />
+                    <div className="row">
+                      <div className="col-6">
+                        <LocaleSelect
+                          name="locales"
+                          label="Target locales"
+                          placeholder="Select some target locales"
+                          errorMessage="Please select a target language."
+                          options={availableLocales.map((v) => ({
+                            ...v,
+                            value: v.locale,
+                            label: v.displayName,
+                          }))}
+                          disabled={submitting}
+                        />
+                      </div>
+                      <div className="col-6">
+                        <VoiceSelect
+                          name="voice"
+                          label="Selected voice"
+                          placeholder="Select a voice"
+                          errorMessage="Please select a voice."
+                          options={
+                            availableVoices
+                              ? availableVoices.map((v) => ({
+                                  ...v,
+                                  value: v.voiceShortName,
+                                  label: v.displayName,
+                                }))
+                              : []
+                          }
+                          disabled={submitting}
+                        />
+                      </div>
+                    </div>
                     <TextInput
                       name="text"
                       label="Text"
