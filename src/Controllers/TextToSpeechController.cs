@@ -50,40 +50,56 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
         }
 
         [HttpPost("synthesizer")]
-        public async Task<IActionResult> Post(TextToSpeechRequest request)
+        public async Task<IActionResult> Post(TranslateTextToSpeechRequest request)
         {
-            if (string.IsNullOrEmpty(request.Text))
-            {
-                return BadRequest("Text is required");
-            }
-
-            if (string.IsNullOrEmpty(request.TargetLanguage))
-            {
-                return BadRequest("TargetLanguage is required");
-            }
-
-            if (string.IsNullOrEmpty(request.VoiceName))
-            {
-                return BadRequest("VoiceName is required");
-            }
+            var isValid = IsModelValid(request);
 
             try
             {
                 // Translate input text
-                var translationResult = await _translatorService.Translate(request.Text, request.TargetLanguage);
-                var translatedText = translationResult.Translations.FirstOrDefault().Text;
+                var targetLanguages = request.SpeechTranslationOptions.Select(o => o.TargetLanguage).ToList();
+                var translationResults = await _translatorService.Translate(request.Text, targetLanguages);
+
+                var translatedText = translationResults.Translations.OrderBy(t => t.To);
+                var ttsRequests = translatedText.Select(t => new TextToSpeechRequest
+                {
+                    Options = request.SpeechTranslationOptions.FirstOrDefault(o => o.TargetLanguage == t.To),
+                    TranslatedText = t.Text
+                }).ToList();
 
                 // Send to speech service
-                var result = await _textToSpeechService.SynthesisToFileAsync(translatedText, request.VoiceName, request.TargetLanguage);
+                await _textToSpeechService.SynthesisToFileAsync(ttsRequests);
 
-                return Ok(result);
+                return Ok(ttsRequests);
             }
             catch (Exception e)
             {
                 _logger.LogError("Error generating audio", e);
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
+        }
 
+        private ActionResult IsModelValid(TranslateTextToSpeechRequest request)
+        {
+            if (string.IsNullOrEmpty(request.Text))
+            {
+                return BadRequest("Text is required");
+            }
+
+            foreach (var ttsRequest in request.SpeechTranslationOptions)
+            {
+                if (string.IsNullOrEmpty(ttsRequest.TargetLanguage))
+                {
+                    return BadRequest("TargetLanguage is required");
+                }
+
+                if (string.IsNullOrEmpty(ttsRequest.VoiceName))
+                {
+                    return BadRequest("VoiceName is required");
+                }
+            }
+            
+            return Ok();
         }
     }
 }
