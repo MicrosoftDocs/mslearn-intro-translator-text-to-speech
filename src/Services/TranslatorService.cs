@@ -24,10 +24,11 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         }
 
-        public async Task<TranslationResult> Translate(string text, string targetLanguage)
+        public async Task<TranslationResult> Translate(string text, IList<string> targetLanguages)
         {
             var body = new object[] { new { Text = text } };
             var requestBody = JsonConvert.SerializeObject(body);
+            var languages = string.Join("&to=", targetLanguages);
 
             var client = _clientFactory.CreateClient();
             using (var request = new HttpRequestMessage())
@@ -37,7 +38,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 
                 // For a complete list of options, see API reference.
                 // https://docs.microsoft.com/azure/cognitive-services/translator/reference/v3-0-translate
-                request.RequestUri = new Uri(_options.Endpoint + Route + $"&to={targetLanguage}");
+                request.RequestUri = new Uri(_options.Endpoint + Route + $"&to={languages}");
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
                 request.Headers.Add("Ocp-Apim-Subscription-Key", _options.ApiKey);
                 request.Headers.Add("Ocp-Apim-Subscription-Region", _options.Region);

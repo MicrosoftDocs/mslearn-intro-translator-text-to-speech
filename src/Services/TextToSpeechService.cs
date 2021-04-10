@@ -15,6 +15,8 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
     {
         private const string FileExtension = "wav";
 
+        private static readonly string SSMLTemplate = Path.Combine(Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location), "Templates");
+
         private readonly ILogger<TextToSpeechService> _logger;
         private readonly SpeechServiceOptions _options;
         private readonly BlobStorageRepository _blobStorageRepository;
@@ -27,6 +29,15 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
             _options = options ?? throw new ArgumentNullException(nameof(options));
             _blobStorageRepository = blobStorageRepository ?? throw new ArgumentNullException(nameof(blobStorageRepository));
+        }
+
+        public async Task SynthesisToFileAsync(IList<TextToSpeechRequest> requests)
+        {
+            foreach (var request in requests)
+            {
+                var url = await SynthesisToFileAsync(request.TranslatedText, request.Options.VoiceName, request.Options.TargetLanguage);
+                request.TTSAudioUrl = url;
+            }
         }
 
         public async Task<string> SynthesisToFileAsync(string text, string voiceName, string targetLanguage)
