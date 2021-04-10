@@ -8,17 +8,19 @@ export const getVoicesForLocale = async (locale) => {
   return await response.json();
 };
 
-export const synthesizeText = async (targetLanguages, voiceName, text) => {
+export const synthesizeText = async (text, speechTranslationOptions) => {
   const response = await fetch("speech/synthesizer", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      targetLanguage: targetLanguages[0],
-      voiceName,
+      speechTranslationOptions,
       text,
     }),
   });
+  if (!response.ok) {
+    throw new Error("Error getting translations");
+  }
   return await response.text();
 };
