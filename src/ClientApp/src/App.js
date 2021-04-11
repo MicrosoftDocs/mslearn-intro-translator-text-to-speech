@@ -3,7 +3,7 @@ import className from "classnames";
 
 // local imports
 import "./App.css";
-import { LanguageSettings, TextInput } from "./components";
+import { LanguageSettings, TextInput, TranslationResults } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
 
@@ -16,9 +16,11 @@ export const App = () => {
   const [availableLocales, setAvailableLocales] = useState([]);
   const [processingStatus, setProcessingStatus] = useState(STATUS.idle);
   const submitting = processingStatus === STATUS.pending;
+  const [translationResults, setTranslationResults] = useState([]);
 
   const processTextToSpeech = async () => {
     try {
+      setTranslationResults([]);
       setProcessingStatus(STATUS.pending);
       const response = await synthesizeText(
         textToTranslate,
@@ -27,10 +29,9 @@ export const App = () => {
           voiceName: setting.voice.voiceShortName,
         }))
       );
-      var audio = new Audio(response);
-      audio.play();
+      setTranslationResults(response);
       setProcessingStatus(STATUS.success);
-    } catch {
+    } catch (error) {
       setProcessingStatus(STATUS.failure);
     }
   };
@@ -46,6 +47,7 @@ export const App = () => {
   if (!availableLocales || availableLocales.length === 0) {
     return null;
   }
+  console.log(languageSettings);
   return (
     <>
       <main className="container">
@@ -90,7 +92,7 @@ export const App = () => {
                   value={textToTranslate}
                   onChange={(value) => setTextToTranslate(value)}
                   isMultiline
-                  submitting={submitting}
+                  disabled={submitting}
                 />
                 <div className="row py-4">
                   <div className="col">
@@ -103,6 +105,11 @@ export const App = () => {
                             "btn-light": index !== selectedLanguageIndex,
                             "btn-primary": index === selectedLanguageIndex,
                           })}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedLanguageIndex(index);
+                          }}
+                          disabled={submitting}
                         >
                           {value.locale.displayName}
                         </button>
@@ -138,7 +145,9 @@ export const App = () => {
               </form>
             </>
           </div>
-          <div className="col-6">Output</div>
+          <div className="col-6">
+            <TranslationResults results={translationResults} />
+          </div>
         </div>
       </main>
     </>

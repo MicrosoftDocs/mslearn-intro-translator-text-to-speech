@@ -24,7 +24,7 @@ export const TextInput = ({
             "form-control": true,
           })}
           onChange={(e) => onChange(e.target.value)}
-          value={value}
+          value={value ? value : ""}
         />
       </>
     </div>

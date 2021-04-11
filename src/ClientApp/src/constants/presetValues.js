@@ -19,4 +19,19 @@ export const presetLanguageSettings = [
       label: "Jenny (Neural)",
     },
   },
+  {
+    locale: {
+      displayName: "Czech (Czechia)",
+      label: "Czech (Czechia)",
+      language: "cs",
+      locale: "cs-CZ",
+      value: "cs-CZ",
+    },
+    voice: {
+      voiceShortName: "cs-CZ-AntoninNeural",
+      value: "cs-CZ-AntoninNeural",
+      displayName: "Antonin (Neural)",
+      label: "Antonin (Neural)",
+    },
+  },
 ];

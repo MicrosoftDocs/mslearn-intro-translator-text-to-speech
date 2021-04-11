@@ -25,7 +25,6 @@ export const LanguageSettings = ({
         value: v.voiceShortName,
         label: v.displayName,
       }));
-      debugger;
       setAvailableVoices(updatedVoices);
     };
     getVoicesForSelectedLocale();
@@ -45,7 +44,6 @@ export const LanguageSettings = ({
             label: v.displayName,
           }))}
           onChange={(option) => {
-            debugger;
             if (currentLanguageSetting.locale.locale === option.value) {
               return;
             }

@@ -22,5 +22,5 @@ export const synthesizeText = async (text, speechTranslationOptions) => {
   if (!response.ok) {
     throw new Error("Error getting translations");
   }
-  return await response.text();
+  return await response.json();
 };
