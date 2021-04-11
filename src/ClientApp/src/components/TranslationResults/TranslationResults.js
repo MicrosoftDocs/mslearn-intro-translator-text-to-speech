@@ -1,26 +1,30 @@
 import { useEffect, useState } from "react";
+import { STATUS } from "../../constants";
+import { wait } from "../../utility";
 
-export const TranslationResults = ({ results }) => {
-  const [textToDisplay, setTextToDisplay] = useState([]);
+export const TranslationResults = ({ results, processingStatus }) => {
+  const [typedText, setTypedText] = useState([]);
   useEffect(() => {
-    const playAndDisplayAudio = async () => {
+    const processResults = async (results) => {
+      const typedText = [];
       for (let index = 0; index < results.length; index++) {
         const translation = results[index];
-        var audio = new Audio(translation.ttsAudioUrl);
-        audio.type = "audio/wav";
-        audio.play();
-        setTextToDisplay([...textToDisplay, translation.translatedText]);
+        await translation.audioElement.play();
+        typedText.push(translation.translatedText);
+        setTypedText(typedText);
+        await wait(translation.duration * 1000);
       }
     };
-    if (results && results.length > 0) {
-      playAndDisplayAudio();
+    if (results && results.length > 0 && processingStatus === STATUS.success) {
+      processResults(results);
     }
-  }, [results, textToDisplay]);
-  return (
+  }, [results, processingStatus]);
+  console.log(typedText);
+  return processingStatus === STATUS.success ? (
     <>
-      {textToDisplay.map((text) => (
-        <p>{text}</p>
+      {typedText.map((text) => (
+        <p key={text}>{text}</p>
       ))}
     </>
-  );
+  ) : null;
 };

@@ -47,7 +47,6 @@ export const App = () => {
   if (!availableLocales || availableLocales.length === 0) {
     return null;
   }
-  console.log(languageSettings);
   return (
     <>
       <main className="container">
@@ -97,21 +96,22 @@ export const App = () => {
                 <div className="row py-4">
                   <div className="col">
                     <h4>Selected languages</h4>
-                    {languageSettings.map((value, index) => {
+                    {languageSettings.map(({ locale }, index) => {
                       return (
                         <button
+                          key={locale.locale}
                           className={className({
                             btn: true,
                             "btn-light": index !== selectedLanguageIndex,
                             "btn-primary": index === selectedLanguageIndex,
                           })}
+                          disabled={submitting}
                           onClick={(e) => {
                             e.preventDefault();
                             setSelectedLanguageIndex(index);
                           }}
-                          disabled={submitting}
                         >
-                          {value.locale.displayName}
+                          {locale.displayName}
                         </button>
                       );
                     })}
@@ -122,8 +122,8 @@ export const App = () => {
                     <h4>Pre made phrases</h4>
                     {presetPhrases.map((text) => (
                       <span
-                        onClick={() => processTextToSpeech()}
                         key={text}
+                        onClick={() => processTextToSpeech()}
                         className="badge badge-pill badge-secondary"
                       >
                         {text}
@@ -146,7 +146,10 @@ export const App = () => {
             </>
           </div>
           <div className="col-6">
-            <TranslationResults results={translationResults} />
+            <TranslationResults
+              results={translationResults}
+              processingStatus={processingStatus}
+            />
           </div>
         </div>
       </main>
