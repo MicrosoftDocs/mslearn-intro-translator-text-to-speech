@@ -1,96 +1,157 @@
-import React from "react";
-import { Form } from "react-final-form";
-import { validate } from "./validate";
-import { LanguageSelect, TextInput } from "./components";
-import { supportedLanguages, presetTextValues } from "./data";
+import React, { useEffect, useState } from "react";
+import className from "classnames";
 
-const convertSpeechToText = async (sourceLanguage, targetLanguage, text) => {
-  const response = await fetch("speech/synthesizer", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
-      sourceLanguage,
-      targetLanguage,
-      text,
-    }),
-  });
-  return await response.text();
-};
+// local imports
+import "./App.css";
+import { LanguageSettings, TextInput, TranslationResults } from "./components";
+import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
+import { synthesizeText, getLocales } from "./api";
 
 export const App = () => {
-  const initialValues = {
-    sourceLanguage: "",
-    targetLanguage: "",
-    text: "",
+  const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
+  const [languageSettings, setLanguageSettings] = useState(
+    presetLanguageSettings
+  );
+  const [textToTranslate, setTextToTranslate] = useState();
+  const [availableLocales, setAvailableLocales] = useState([]);
+  const [processingStatus, setProcessingStatus] = useState(STATUS.idle);
+  const submitting = processingStatus === STATUS.pending;
+  const [translationResults, setTranslationResults] = useState([]);
+
+  const processTextToSpeech = async () => {
+    try {
+      setTranslationResults([]);
+      setProcessingStatus(STATUS.pending);
+      const response = await synthesizeText(
+        textToTranslate,
+        languageSettings.map((setting) => ({
+          targetLanguage: setting.locale.language,
+          voiceName: setting.voice.voiceShortName,
+        }))
+      );
+      setTranslationResults(response);
+      setProcessingStatus(STATUS.success);
+    } catch (error) {
+      setProcessingStatus(STATUS.failure);
+    }
   };
-  const processTextToSpeech = async (values) => {
-    const response = await convertSpeechToText(
-      values.sourceLanguage,
-      values.targetLanguage,
-      values.text
-    );
-    var audio = new Audio(response);
-    audio.play();
-  };
+
+  useEffect(() => {
+    const getAndSetAvailableLocales = async () => {
+      const response = await getLocales();
+      setAvailableLocales(response);
+    };
+    getAndSetAvailableLocales();
+  }, []);
+
+  if (!availableLocales || availableLocales.length === 0) {
+    return null;
+  }
   return (
     <>
-      <nav className="container navbar navbar-light">
-        <span className="navbar-brand ">Text to speech</span>
-      </nav>
       <main className="container">
-        <Form
-          onSubmit={(values) => processTextToSpeech(values)}
-          initialValues={initialValues}
-          validate={validate}
-          render={({ handleSubmit, values, submitting }) => (
+        <header className="row">
+          <div className="col-6">
+            <h1>Translator &amp; Text to Speech</h1>
+            <p>
+              Write an announcement or select a pre-made announcement, and
+              select the languages to translate your messages into. Translator
+              service will translate your message into new languages, and
+              text-to-speech will read out your message in the selected
+              languages.
+            </p>
+          </div>
+        </header>
+        <div className="row py-4">
+          <div className="col-6">
             <>
-              <form aria-label="Text to Speech" onSubmit={handleSubmit}>
-                <LanguageSelect
-                  name="sourceLanguage"
-                  label="Source language"
-                  placeholder="Select source language"
-                  errorMessage="Please select a source language."
-                  languages={supportedLanguages}
-                  disabled={submitting}
-                />
-                <LanguageSelect
-                  name="targetLanguage"
-                  label="Target language"
-                  placeholder="Select target language"
-                  errorMessage="Please select a target language."
-                  languages={supportedLanguages}
-                  disabled={submitting}
+              <form
+                aria-label="Text to Speech"
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  processTextToSpeech();
+                }}
+              >
+                <LanguageSettings
+                  availableLocales={availableLocales}
+                  currentLanguageSetting={
+                    languageSettings[selectedLanguageIndex]
+                  }
+                  updateCurrentLanguageSetting={(updatedValue) => {
+                    const updatedSettings = [...languageSettings];
+                    updatedSettings[selectedLanguageIndex] = updatedValue;
+                    setLanguageSettings(updatedSettings);
+                  }}
+                  submitting={submitting}
                 />
                 <TextInput
                   name="text"
                   label="Text"
                   errorMessage="Please enter some text"
+                  value={textToTranslate}
+                  onChange={(value) => setTextToTranslate(value)}
+                  isMultiline
                   disabled={submitting}
                 />
-                <button
-                  className="btn btn-primary"
-                  type="submit"
-                  disabled={submitting}
-                >
-                  Submit
-                </button>
-              </form>
-              {values.sourceLanguage && values.targetLanguage
-                ? presetTextValues[values.sourceLanguage].map((text) => (
-                    <span
-                      onClick={() => processTextToSpeech({ ...values, text })}
-                      key={text}
-                      className="badge badge-pill badge-secondary"
+                <div className="row py-4">
+                  <div className="col">
+                    <h4>Selected languages</h4>
+                    {languageSettings.map(({ locale }, index) => {
+                      return (
+                        <button
+                          key={locale.locale}
+                          className={className({
+                            btn: true,
+                            "btn-light": index !== selectedLanguageIndex,
+                            "btn-primary": index === selectedLanguageIndex,
+                          })}
+                          disabled={submitting}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setSelectedLanguageIndex(index);
+                          }}
+                        >
+                          {locale.displayName}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="row py-4">
+                  <div className="col">
+                    <h4>Pre made phrases</h4>
+                    {presetPhrases.map((text) => (
+                      <span
+                        key={text}
+                        onClick={() => processTextToSpeech()}
+                        className="badge badge-pill badge-secondary"
+                      >
+                        {text}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <div className="row">
+                  <div className="col">
+                    <button
+                      className="btn btn-primary"
+                      type="submit"
+                      disabled={submitting}
                     >
-                      {text}
-                    </span>
-                  ))
-                : null}
+                      Translate
+                    </button>
+                  </div>
+                </div>
+              </form>
             </>
-          )}
-        />
+          </div>
+          <div className="col-6">
+            <TranslationResults
+              results={translationResults}
+              processingStatus={processingStatus}
+            />
+          </div>
+        </div>
       </main>
     </>
   );
