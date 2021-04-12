@@ -26,12 +26,20 @@ export const synthesizeText = async (text, speechTranslationOptions) => {
   }
   const translations = await response.json();
   const processedTranslations = [];
+  let delayBeforePlaying = 0;
   for (let index = 0; index < translations.length; index++) {
     const translation = translations[index];
     const audio = await processAudioFile(translation.ttsAudioUrl);
+    delayBeforePlaying = processedTranslations.reduce(
+      (accumulator, currentValue) => {
+        return accumulator + currentValue.duration;
+      },
+      0
+    );
     processedTranslations.push({
       ...translation,
       ...audio,
+      delayBeforePlaying,
     });
   }
   return processedTranslations;
