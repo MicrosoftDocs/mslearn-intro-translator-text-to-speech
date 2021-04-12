@@ -11,20 +11,21 @@ export const TranslationResults = ({ results, processingStatus }) => {
         const translation = results[index];
         await translation.audioElement.play();
         typedText.push(translation.translatedText);
-        setTypedText(typedText);
         await wait(translation.duration * 1000);
       }
+      setTypedText(typedText);
     };
-    if (results && results.length > 0 && processingStatus === STATUS.success) {
+    if (processingStatus === STATUS.success && results && results.length > 0) {
       processResults(results);
     }
   }, [results, processingStatus]);
   console.log(typedText);
   return processingStatus === STATUS.success ? (
     <>
-      {typedText.map((text) => (
-        <p key={text}>{text}</p>
-      ))}
+      {typedText.map((text) => {
+        console.log(text);
+        return <p key={text}>{text}</p>;
+      })}
     </>
   ) : null;
 };
