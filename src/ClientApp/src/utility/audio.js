@@ -5,12 +5,18 @@ export const processAudioFile = async (uri) =>
     audioElement.addEventListener(
       "loadedmetadata",
       () => {
+        console.log("Metadata loaded " + uri);
         var duration = audioElement.duration;
         resolve({
           audioElement,
           duration,
         });
       },
-      false
+      {
+        once: true,
+      }
     );
+    audioElement.onerror = () => {
+      reject(`Failed to load audio ${uri}`);
+    };
   });

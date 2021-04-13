@@ -1,9 +1,10 @@
-import { useEffect } from "react";
 import Typist from "react-typist";
+import { useEffect } from "react";
 
 // local imports
 import { STATUS } from "../../constants";
 import { wait } from "../../utility";
+import { PlayAudio } from "./PlayAudio";
 
 export const TranslationResults = ({ results, processingStatus }) => {
   const hasResults =
@@ -11,11 +12,9 @@ export const TranslationResults = ({ results, processingStatus }) => {
   useEffect(() => {
     const playAudio = async (results) => {
       console.log("started");
-      const typedText = [];
       for (let index = 0; index < results.length; index++) {
         const translation = results[index];
         await translation.audioElement.play();
-        typedText.push(translation.translatedText);
         await wait(translation.duration * 1000);
       }
       console.log("finished");
@@ -28,15 +27,12 @@ export const TranslationResults = ({ results, processingStatus }) => {
     <>
       <Typist
         cursor={{
-          show: true,
-          blink: true,
-          element: "|",
-          hideWhenDone: true,
+          show: false,
         }}
       >
         {results.map((translation) => {
           return (
-            <p>
+            <p key={translation.translatedText}>
               {translation.translatedText}
               <Typist.Delay ms={translation.duration * 1000} />
             </p>
