@@ -79,19 +79,19 @@ export const presetLanguageSettings = [
       label: "Nanami (Neural)",
     },
   },
-  {
-    locale: {
-      locale: "hi-IN",
-      value: "hi-IN",
-      displayName: "Hindi (India)",
-      label: "Hindi (India)",
-      language: "hi",
-    },
-    voice: {
-      voiceShortName: "hi-IN-MadhurNeural",
-      value: "hi-IN-MadhurNeural",
-      displayName: "Madhur (Neural)",
-      label: "Madhur (Neural)",
-    },
-  },
+  // {
+  //   locale: {
+  //     locale: "hi-IN",
+  //     value: "hi-IN",
+  //     displayName: "Hindi (India)",
+  //     label: "Hindi (India)",
+  //     language: "hi",
+  //   },
+  //   voice: {
+  //     voiceShortName: "hi-IN-MadhurNeural",
+  //     value: "hi-IN-MadhurNeural",
+  //     displayName: "Madhur (Neural)",
+  //     label: "Madhur (Neural)",
+  //   },
+  // },
 ];
