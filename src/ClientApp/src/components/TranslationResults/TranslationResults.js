@@ -11,7 +11,7 @@ const getTranslationDelay = (text, audioDuration) => {
   const typingDuration = text.length * typingDelay;
   return audioDuration * 1000 > typingDuration
     ? audioDuration * 1000 - typingDuration
-    : typingDuration;
+    : 0;
 };
 
 export const TranslationResults = ({ results, processingStatus }) => {

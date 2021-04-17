@@ -1,6 +1,7 @@
 export const presetPhrases = [
-  "Hello everyone, how are you today?",
-  "Would you like to go for a walk?",
+  "Flight BC767 is now boarding",
+  "Flight DAN119 ahs been delayed",
+  "This is the final call for flight TM121 to Instanbul",
 ];
 
 export const presetLanguageSettings = [
@@ -79,19 +80,19 @@ export const presetLanguageSettings = [
       label: "Nanami (Neural)",
     },
   },
-  // {
-  //   locale: {
-  //     locale: "hi-IN",
-  //     value: "hi-IN",
-  //     displayName: "Hindi (India)",
-  //     label: "Hindi (India)",
-  //     language: "hi",
-  //   },
-  //   voice: {
-  //     voiceShortName: "hi-IN-MadhurNeural",
-  //     value: "hi-IN-MadhurNeural",
-  //     displayName: "Madhur (Neural)",
-  //     label: "Madhur (Neural)",
-  //   },
-  // },
+  {
+    locale: {
+      locale: "hi-IN",
+      value: "hi-IN",
+      displayName: "Hindi (India)",
+      label: "Hindi (India)",
+      language: "hi",
+    },
+    voice: {
+      voiceShortName: "hi-IN-MadhurNeural",
+      value: "hi-IN-MadhurNeural",
+      displayName: "Madhur (Neural)",
+      label: "Madhur (Neural)",
+    },
+  },
 ];
