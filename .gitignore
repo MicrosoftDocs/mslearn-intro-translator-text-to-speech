@@ -1,6 +1,7 @@
 # Project specific
 
 wwwroot/
+src/.idea/.idea.CognitiveServicesDemo.TextToSpeech/
 
 # Created by https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,rider,macos,windows,node
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,visualstudiocode,rider,macos,windows,node
@@ -613,3 +614,4 @@ MigrationBackup/
 .ionide/
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudio,visualstudiocode,rider,macos,windows,node
+src/.idea/.idea.CognitiveServicesDemo.TextToSpeech/riderModule.iml

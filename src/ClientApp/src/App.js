@@ -18,12 +18,12 @@ export const App = () => {
   const submitting = processingStatus === STATUS.pending;
   const [translationResults, setTranslationResults] = useState([]);
 
-  const processTextToSpeech = async () => {
+  const processTextToSpeech = async (text) => {
     try {
-      setTranslationResults([]);
       setProcessingStatus(STATUS.pending);
+      setTranslationResults([]);
       const response = await synthesizeText(
-        textToTranslate,
+        text,
         languageSettings.map((setting) => ({
           targetLanguage: setting.locale.language,
           voiceName: setting.voice.voiceShortName,
@@ -69,7 +69,7 @@ export const App = () => {
                 aria-label="Text to Speech"
                 onSubmit={(e) => {
                   e.preventDefault();
-                  processTextToSpeech();
+                  processTextToSpeech(textToTranslate);
                 }}
               >
                 <LanguageSettings
@@ -121,13 +121,14 @@ export const App = () => {
                   <div className="col">
                     <h4>Pre made phrases</h4>
                     {presetPhrases.map((text) => (
-                      <span
+                      <button
                         key={text}
-                        onClick={() => processTextToSpeech()}
-                        className="badge badge-pill badge-secondary"
+                        onClick={() => processTextToSpeech(text)}
+                        className="btn btn-secondary"
+                        disabled={submitting}
                       >
                         {text}
-                      </span>
+                      </button>
                     ))}
                   </div>
                 </div>
