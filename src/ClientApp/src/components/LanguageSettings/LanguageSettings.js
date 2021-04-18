@@ -34,7 +34,6 @@ export const LanguageSettings = ({
       <div className="col-6">
         <SelectField
           name="locale"
-          label="Target locales"
           placeholder="Select some target locales"
           errorMessage="Please select a target language."
           value={currentLanguageSetting.locale}
@@ -60,7 +59,6 @@ export const LanguageSettings = ({
       <div className="col-6">
         <SelectField
           name="voice"
-          label="Selected voice"
           placeholder="Select a voice"
           errorMessage="Please select a voice."
           options={availableVoices.map((v) => ({

@@ -3,7 +3,11 @@ import className from "classnames";
 
 // local imports
 import "./App.css";
-import { LanguageSettings, TextInput, TranslationResults } from "./components";
+import {
+  LanguageSettings,
+  TextAreaField,
+  TranslationResults,
+} from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
 
@@ -50,10 +54,12 @@ export const App = () => {
   return (
     <>
       <main className="container">
-        <header className="row">
+        <header className="PageHeader row">
           <div className="col-6">
-            <h1>Translator &amp; Text to Speech</h1>
-            <p>
+            <h1 className="PageHeader__heading">
+              Translator &amp; Text to Speech
+            </h1>
+            <p className="PageHeader__text">
               Write an announcement or select a pre-made announcement, and
               select the languages to translate your messages into. Translator
               service will translate your message into new languages, and
@@ -71,6 +77,7 @@ export const App = () => {
                   e.preventDefault();
                   processTextToSpeech(textToTranslate);
                 }}
+                autoComplete={false}
               >
                 <LanguageSettings
                   availableLocales={availableLocales}
@@ -84,58 +91,71 @@ export const App = () => {
                   }}
                   submitting={submitting}
                 />
-                <TextInput
+                <TextAreaField
                   name="text"
-                  label="Text"
+                  placeholder="This is the final call for flight AA123 to Buenos Aires"
                   errorMessage="Please enter some text"
                   value={textToTranslate}
                   onChange={(value) => setTextToTranslate(value)}
                   isMultiline
                   disabled={submitting}
+                  className="TranslatorTextInput"
                 />
                 <div className="row py-4">
                   <div className="col">
                     <h4>Selected languages</h4>
-                    {languageSettings.map(({ locale }, index) => {
-                      return (
-                        <button
-                          key={locale.locale}
-                          className={className({
-                            btn: true,
-                            "btn-light": index !== selectedLanguageIndex,
-                            "btn-primary": index === selectedLanguageIndex,
-                          })}
-                          disabled={submitting}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            setSelectedLanguageIndex(index);
-                          }}
-                        >
-                          {locale.displayName}
-                        </button>
-                      );
-                    })}
+                    <div className="row">
+                      <div className="col  d-flex flex-wrap">
+                        {languageSettings.map(({ locale }, index) => {
+                          return (
+                            <button
+                              key={locale.locale}
+                              className={className({
+                                btn: true,
+                                flex: true,
+                                "btn-language": true,
+                                "btn-light": index !== selectedLanguageIndex,
+                                "btn-primary": index === selectedLanguageIndex,
+                              })}
+                              disabled={submitting}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                setSelectedLanguageIndex(index);
+                              }}
+                            >
+                              {locale.displayName}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
                   </div>
                 </div>
                 <div className="row py-4">
                   <div className="col">
                     <h4>Pre made phrases</h4>
-                    {presetPhrases.map((text) => (
-                      <button
-                        key={text}
-                        onClick={() => processTextToSpeech(text)}
-                        className="btn btn-secondary"
-                        disabled={submitting}
-                      >
-                        {text}
-                      </button>
-                    ))}
+                    <div className="d-flex flex-wrap flex-row">
+                      {presetPhrases.map((text) => (
+                        <button
+                          key={text}
+                          onClick={() => processTextToSpeech(text)}
+                          className={className({
+                            btn: true,
+                            flex: true,
+                            "btn-phrase": true,
+                          })}
+                          disabled={submitting}
+                        >
+                          {text}
+                        </button>
+                      ))}
+                    </div>
                   </div>
                 </div>
                 <div className="row">
                   <div className="col">
                     <button
-                      className="btn btn-primary"
+                      className="btn btn-primary btn-wide float-right"
                       type="submit"
                       disabled={submitting}
                     >

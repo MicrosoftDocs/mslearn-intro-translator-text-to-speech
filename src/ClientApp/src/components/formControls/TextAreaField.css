@@ -1,0 +1,12 @@
+.TextAreaField textarea {
+  border: 0;
+  border-radius: 0;
+  opacity: 0.7;
+  color: #243a5e;
+  font-size: 20px;
+  height: 200px;
+}
+
+.TextAreaField textarea::placeholder {
+  font-style: italic;
+}
