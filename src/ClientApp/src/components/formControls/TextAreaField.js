@@ -11,10 +11,11 @@ export const TextAreaField = ({
   isMultiline = false,
   onChange,
   value,
+  errorMessage,
 }) => {
   return (
     <div className="TextAreaField form-group">
-      <label htmlFor={name}>{label}</label>
+      {label ? <label htmlFor={name}>{label}</label> : null}
       <>
         <textarea
           id={name}
@@ -31,6 +32,7 @@ export const TextAreaField = ({
           value={value ? value : ""}
           autoComplete="nope"
         />
+        {errorMessage ? <p className="error">{errorMessage}</p> : null}
       </>
     </div>
   );

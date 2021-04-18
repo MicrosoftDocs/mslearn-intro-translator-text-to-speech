@@ -1,3 +1,7 @@
+.SelectField.form-group {
+  margin-bottom: 0;
+}
+
 .SelectField .btn {
   color: black;
   width: 100%;

@@ -1,0 +1,29 @@
+.TranslationResults {
+  display: block;
+  border: 0;
+  border-radius: 0;
+  opacity: 0;
+  color: #243a5e;
+  min-height: 200px;
+  background-color: white;
+  padding: 10px;
+  animation: 3s ease-in;
+}
+
+.TranslationResults--hasResults {
+  opacity: 0.7;
+}
+
+.TranslationResults p {
+  color: #243a5e;
+  font-size: 18px;
+}
+
+@keyframes fadein {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 0.7;
+  }
+}

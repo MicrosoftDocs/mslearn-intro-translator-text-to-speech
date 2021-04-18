@@ -17,6 +17,7 @@ export const App = () => {
     presetLanguageSettings
   );
   const [textToTranslate, setTextToTranslate] = useState();
+  const [validationError, setValidationError] = useState();
   const [availableLocales, setAvailableLocales] = useState([]);
   const [processingStatus, setProcessingStatus] = useState(STATUS.idle);
   const submitting = processingStatus === STATUS.pending;
@@ -24,6 +25,12 @@ export const App = () => {
 
   const processTextToSpeech = async (text) => {
     try {
+      if (!text) {
+        setValidationError(
+          "You must enter text or select a pre-made phrase below"
+        );
+        return;
+      }
       setProcessingStatus(STATUS.pending);
       setTranslationResults([]);
       const response = await synthesizeText(
@@ -70,6 +77,20 @@ export const App = () => {
         </header>
         <div className="row py-4">
           <div className="col-6">
+            <LanguageSettings
+              availableLocales={availableLocales}
+              currentLanguageSetting={languageSettings[selectedLanguageIndex]}
+              updateCurrentLanguageSetting={(updatedValue) => {
+                const updatedSettings = [...languageSettings];
+                updatedSettings[selectedLanguageIndex] = updatedValue;
+                setLanguageSettings(updatedSettings);
+              }}
+              submitting={submitting}
+            />
+          </div>
+        </div>
+        <div className="row py-4">
+          <div className="col-6">
             <>
               <form
                 aria-label="Text to Speech"
@@ -79,22 +100,10 @@ export const App = () => {
                 }}
                 autoComplete={false}
               >
-                <LanguageSettings
-                  availableLocales={availableLocales}
-                  currentLanguageSetting={
-                    languageSettings[selectedLanguageIndex]
-                  }
-                  updateCurrentLanguageSetting={(updatedValue) => {
-                    const updatedSettings = [...languageSettings];
-                    updatedSettings[selectedLanguageIndex] = updatedValue;
-                    setLanguageSettings(updatedSettings);
-                  }}
-                  submitting={submitting}
-                />
                 <TextAreaField
                   name="text"
-                  placeholder="This is the final call for flight AA123 to Buenos Aires"
-                  errorMessage="Please enter some text"
+                  placeholder="Type something to translate..."
+                  errorMessage={validationError}
                   value={textToTranslate}
                   onChange={(value) => setTextToTranslate(value)}
                   isMultiline
