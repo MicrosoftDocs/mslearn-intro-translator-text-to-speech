@@ -1,0 +1,18 @@
+.SelectField.form-group {
+  margin-bottom: 0;
+}
+
+.SelectField .btn {
+  color: black;
+  width: 100%;
+  border: 0;
+  border-radius: 0;
+  background: white;
+}
+
+.SelectField .dropdown-menu {
+  width: 100%;
+  max-height: 400px;
+  overflow-y: scroll;
+  overflow-x: hidden;
+}

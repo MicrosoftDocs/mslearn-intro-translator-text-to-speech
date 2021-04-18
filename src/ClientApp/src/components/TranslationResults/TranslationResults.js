@@ -1,7 +1,9 @@
 import Typist from "react-typist";
 import { useEffect } from "react";
+import className from "classnames";
 
 // local imports
+import "./TranslationResults.css";
 import { STATUS } from "../../constants";
 import { wait } from "../../utility";
 
@@ -29,30 +31,37 @@ export const TranslationResults = ({ results, processingStatus }) => {
       playAudio(results);
     }
   }, [results, hasResults]);
-  return hasResults ? (
-    <>
-      <Typist
-        avgTypingDelay={typingDelay}
-        cursor={{
-          show: false,
-        }}
-      >
-        {results.map((translation) => {
-          return (
-            <span>
-              <p key={translation.translatedText}>
-                {translation.translatedText}
-              </p>
-              <Typist.Delay
-                ms={getTranslationDelay(
-                  translation.translatedText,
-                  translation.duration
-                )}
-              />
-            </span>
-          );
-        })}
-      </Typist>
-    </>
-  ) : null;
+  return (
+    <div
+      className={className({
+        TranslationResults: true,
+        "TranslationResults--hasResults": hasResults,
+      })}
+    >
+      {hasResults ? (
+        <Typist
+          avgTypingDelay={typingDelay}
+          cursor={{
+            show: false,
+          }}
+        >
+          {results.map((translation) => {
+            return (
+              <span>
+                <p key={translation.translatedText}>
+                  {translation.translatedText}
+                </p>
+                <Typist.Delay
+                  ms={getTranslationDelay(
+                    translation.translatedText,
+                    translation.duration
+                  )}
+                />
+              </span>
+            );
+          })}
+        </Typist>
+      ) : null}{" "}
+    </div>
+  );
 };

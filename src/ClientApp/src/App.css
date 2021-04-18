@@ -1,6 +1,8 @@
 body {
-  background-color: #23395e;
-  padding: 50px 0;
+  font-family: Segoe UI, sans-serif;
+  background: url(./images/background.jpg) no-repeat center center fixed;
+  background-size: cover;
+  padding: 50px 0 0;
 }
 
 p,
@@ -20,4 +22,61 @@ label {
 
 .invalid-feedback {
   display: block;
+}
+
+.btn {
+  border: 1px solid white;
+  border-radius: 0;
+}
+
+.btn:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.btn.btn-wide {
+  padding-left: 48px;
+  padding-right: 48px;
+}
+
+.btn.btn-primary {
+  border: 1px solid #243a5e;
+  background-color: #243a5e;
+}
+
+.btn.btn-language {
+  border: 1px solid #dce3ed;
+  padding-left: 18px;
+  padding-right: 18px;
+  margin-right: 12px;
+  margin-bottom: 12px;
+}
+
+.btn.btn-phrase {
+  border: 0;
+  color: white;
+  background-color: #243a5e;
+  margin-right: 8px;
+  margin-bottom: 8px;
+  font-style: italic;
+  font-size: 16px;
+}
+
+.btn.btn-phrase:hover {
+  border: 0;
+  background: white;
+  color: black;
+}
+
+.PageHeader__text {
+  font-size: 15px;
+  margin: 24px 0 12px;
+}
+
+.TranslatorTextInput input {
+  border: 0;
+  border-radius: 0;
+  opacity: 0.6;
+  color: #243a5e;
+  height: 200px;
 }

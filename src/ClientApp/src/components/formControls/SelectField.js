@@ -2,6 +2,8 @@ import React, { useState, useRef } from "react";
 import useOnClickOutside from "use-onclickoutside";
 import className from "classnames";
 
+import "./SelectField.css";
+
 export const SelectField = ({
   name,
   label,
@@ -15,7 +17,7 @@ export const SelectField = ({
   const ref = useRef(null);
   useOnClickOutside(ref, () => setIsOpen(false));
   return (
-    <div className="form-group">
+    <div className="SelectField form-group">
       {label ? <label htmlFor={name}>{label}</label> : null}
       <div className="dropdown" ref={ref}>
         <button
