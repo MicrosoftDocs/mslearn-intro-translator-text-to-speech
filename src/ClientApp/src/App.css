@@ -62,6 +62,12 @@ label {
   font-size: 16px;
 }
 
+.btn.btn-phrase:hover {
+  border: 0;
+  background: white;
+  color: black;
+}
+
 .PageHeader__text {
   font-size: 15px;
   margin: 24px 0 12px;
