@@ -25,19 +25,10 @@ namespace CognitiveServicesDemo.TextToSpeech
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var speechServiceOptions = new SpeechServiceOptions();
-            Configuration.GetSection(SpeechServiceOptions.SpeechService).Bind(speechServiceOptions);
-
-            var blobStorageOptions = new BlobStorageOptions();
-            Configuration.GetSection(BlobStorageOptions.BlobStorage).Bind(blobStorageOptions);
-
-            var translatorOptions = new TranslatorOptions();
-            Configuration.GetSection(TranslatorOptions.Translator).Bind(translatorOptions);
-
+            services.Configure<SpeechServiceOptions>(Configuration.GetSection("SpeechService"));
+            services.Configure<BlobStorageOptions>(Configuration.GetSection("BlobStorage"));
+            services.Configure<TranslatorOptions>(Configuration.GetSection("Translator"));
             services
-                .AddSingleton<SpeechServiceOptions>(x => speechServiceOptions)
-                .AddSingleton<BlobStorageOptions>(x => blobStorageOptions)
-                .AddSingleton<TranslatorOptions>(x => translatorOptions)
                 .AddSingleton<VoiceInformationService>()
                 .AddScoped<TextToSpeechService>()
                 .AddScoped<TranslatorService>()
@@ -53,7 +44,6 @@ namespace CognitiveServicesDemo.TextToSpeech
             });
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())

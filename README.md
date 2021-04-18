@@ -1,7 +1,43 @@
+# MS Learn - Text to speech, translator
+
+This repo contains the code for the MS Learn Text to speech, translator demo.
+
+## Pre-requisites
+
+- [Node >=12](https://nodejs.org)
+- [.Net Core 5](https://dotnet.microsoft.com/download/dotnet/5.0)
+
+## Getting started
+
+The first thing you need to do is add various secrets to your app replacing the values in `{}` from the Azure Portal:
+
+```
+cd src
+dotnet user-secrets set SpeechService:Region "{speechServiceRegion}"
+dotnet user-secrets set SpeechService:ApiKey "{speechServiceApiKey}"
+dotnet user-secrets set BlobStorage:ConnectionString "{blobStorageConnectionString}"
+dotnet user-secrets set BlobStorage:ContainerName "{blobStorageContainerName}"
+dotnet user-secrets set Translator:Region "{translatorRegion}"
+dotnet user-secrets set Translator:ApiKey "{translatorServiceApiKey}"
+```
+
+To run the app with live reload run the following:
+
+```bash
+cd src
+dotnet watch run
+```
+
+To publish the app:
+
+```bash
+cd src
+dotnet publish
+```
 
 # Contributing
 
-This project welcomes contributions and suggestions.  Most contributions require you to agree to a
+This project welcomes contributions and suggestions. Most contributions require you to agree to a
 Contributor License Agreement (CLA) declaring that you have the right to, and actually do, grant us
 the rights to use your contribution. For details, visit https://cla.opensource.microsoft.com.
 

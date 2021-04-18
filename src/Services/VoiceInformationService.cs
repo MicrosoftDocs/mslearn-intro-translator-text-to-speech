@@ -3,6 +3,7 @@ using CognitiveServicesDemo.TextToSpeech.Repositories;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -21,10 +22,10 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
         private IReadOnlyCollection<VoiceInfo> _voices;
         private SpeechSynthesizer _synthesizer;
 
-        public VoiceInformationService(ILogger<TextToSpeechService> logger, SpeechServiceOptions options)
+        public VoiceInformationService(ILogger<TextToSpeechService> logger, IOptions<SpeechServiceOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task<IList<LocaleInfo>> GetLocales()
