@@ -51,7 +51,6 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 var result = await response.Content.ReadAsStringAsync();
                 var translationResults = JsonConvert.DeserializeObject<TranslationResult[]>(result);
 
-                //TODO: The service should already return the highest score first, check
                 return translationResults.OrderByDescending(x => x.DetectedLanguage.Score).FirstOrDefault();
             }
         }

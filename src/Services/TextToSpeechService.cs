@@ -36,8 +36,16 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
         {
             foreach (var request in requests)
             {
-                var url = await SynthesisToFileAsync(request.TranslatedText, request.Options.VoiceName, request.Options.TargetLanguage);
-                request.TTSAudioUrl = url;
+                try
+                {
+                    var url = await SynthesisToFileAsync(request.TranslatedText, request.Options.VoiceName, request.Options.TargetLanguage);
+                    request.TTSAudioUrl = url;
+                }
+                finally
+                {
+                    // Dispose the current instance
+                    Dispose();
+                }
             }
         }
 
@@ -89,21 +97,18 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
 
         private SpeechSynthesizer GetSpeechSynthesizer(string voice, string language)
         {
-            if (_synthesizer == null)
-            {
-                var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
+            var config = SpeechConfig.FromSubscription(_options.ApiKey, _options.Region);
 
-                // Specify voice and language
-                config.SpeechSynthesisVoiceName = voice;
-                config.SpeechSynthesisLanguage = language;
+            // Specify voice and language
+            config.SpeechSynthesisVoiceName = voice;
+            config.SpeechSynthesisLanguage = language;
 
-                // Creates an audio output stream.
-                _audioOutputStream = AudioOutputStream.CreatePullStream();
-                _streamConfig = AudioConfig.FromStreamOutput(_audioOutputStream);
+            // Creates an audio output stream.
+            _audioOutputStream = AudioOutputStream.CreatePullStream();
+            _streamConfig = AudioConfig.FromStreamOutput(_audioOutputStream);
 
-                // Creates a speech synthesizer, reuse this instance in real world applications to reduce number of connections
-                _synthesizer = new SpeechSynthesizer(config, _streamConfig);
-            }
+            // Creates a speech synthesizer, reuse this instance in real world applications to reduce number of connections
+            _synthesizer = new SpeechSynthesizer(config, _streamConfig);
 
             return _synthesizer;
         }
