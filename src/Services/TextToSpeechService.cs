@@ -3,6 +3,7 @@ using CognitiveServicesDemo.TextToSpeech.Repositories;
 using Microsoft.CognitiveServices.Speech;
 using Microsoft.CognitiveServices.Speech.Audio;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,10 +25,10 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
         private AudioConfig _streamConfig;
         private AudioOutputStream _audioOutputStream;
 
-        public TextToSpeechService(ILogger<TextToSpeechService> logger, SpeechServiceOptions options, BlobStorageRepository blobStorageRepository)
+        public TextToSpeechService(ILogger<TextToSpeechService> logger, IOptions<SpeechServiceOptions> options, BlobStorageRepository blobStorageRepository)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
             _blobStorageRepository = blobStorageRepository ?? throw new ArgumentNullException(nameof(blobStorageRepository));
         }
 

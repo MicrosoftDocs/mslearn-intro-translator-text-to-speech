@@ -1,5 +1,6 @@
 using CognitiveServicesDemo.TextToSpeech.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -17,10 +18,10 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
         private readonly TranslatorOptions _options;
         private readonly IHttpClientFactory _clientFactory;
 
-        public TranslatorService(ILogger<TranslatorService> logger, IHttpClientFactory clientFactory, TranslatorOptions options)
+        public TranslatorService(ILogger<TranslatorService> logger, IHttpClientFactory clientFactory, IOptions<TranslatorOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
             _clientFactory = clientFactory ?? throw new ArgumentNullException(nameof(clientFactory));
         }
 

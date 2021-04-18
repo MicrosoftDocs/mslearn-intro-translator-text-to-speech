@@ -1,6 +1,7 @@
 using Azure.Storage.Blobs;
 using CognitiveServicesDemo.TextToSpeech.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -15,10 +16,10 @@ namespace CognitiveServicesDemo.TextToSpeech.Repositories
         private readonly BlobStorageOptions _options;
         private BlobContainerClient _blobContainerClient;
 
-        public BlobStorageRepository(ILogger<BlobStorageRepository> logger, BlobStorageOptions options)
+        public BlobStorageRepository(ILogger<BlobStorageRepository> logger, IOptions<BlobStorageOptions> options)
         {
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _options = options ?? throw new ArgumentNullException(nameof(options));
+            _options = options.Value ?? throw new ArgumentNullException(nameof(options));
         }
 
         public async Task<string> UploadFileContent(byte[] data, string fileName)
@@ -44,7 +45,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Repositories
                 // Create the container and return a container client object
                 _blobContainerClient = blobServiceClient.GetBlobContainerClient(_options.ContainerName);
             }
-            
+
             return _blobContainerClient;
         }
     }
