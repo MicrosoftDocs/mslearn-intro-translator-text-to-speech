@@ -60,12 +60,12 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
                 var targetLanguages = request.SpeechTranslationOptions.Select(o => o.TargetLanguage).ToList();
                 var translationResults = await _translatorService.Translate(request.Text, targetLanguages);
 
-                var translatedText = translationResults.Translations.OrderBy(t => t.To);
-                var ttsRequests = translatedText.Select(t => new TextToSpeechRequest
-                {
-                    Options = request.SpeechTranslationOptions.FirstOrDefault(o => o.TargetLanguage == t.To),
-                    TranslatedText = t.Text
-                }).ToList();
+                var ttsRequests = translationResults.Translations
+                    .Select(t => new TextToSpeechRequest
+                    {
+                        Options = request.SpeechTranslationOptions.FirstOrDefault(o => o.TargetLanguage == t.To),
+                        TranslatedText = t.Text
+                    }).ToList();
 
                 // Send to speech service
                 await _textToSpeechService.SynthesisToFileAsync(ttsRequests);
