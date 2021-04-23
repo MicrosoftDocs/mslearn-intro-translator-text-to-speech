@@ -4,13 +4,15 @@ import className from "classnames";
 // local imports
 import "./App.css";
 import {
-  LanguageSettings,
+  LanguageSettingsEditor,
   TextAreaField,
   TranslationResults,
-  PresetPhraseButton,
+  LanguageSettingButton,
+  AddLanguageSettingButton,
 } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
+import { removeAtIndex } from "./utility";
 
 export const App = () => {
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
@@ -78,7 +80,7 @@ export const App = () => {
         </header>
         <div className="row py-4">
           <div className="col-6">
-            <LanguageSettings
+            <LanguageSettingsEditor
               availableLocales={availableLocales}
               currentLanguageSetting={languageSettings[selectedLanguageIndex]}
               updateCurrentLanguageSetting={(updatedValue) => {
@@ -116,27 +118,26 @@ export const App = () => {
                     <h4>Selected languages</h4>
                     <div className="row">
                       <div className="col  d-flex flex-wrap">
-                        {languageSettings.map(({ locale }, index) => {
-                          return (
-                            <button
-                              key={locale.locale}
-                              className={className({
-                                btn: true,
-                                flex: true,
-                                "btn-language": true,
-                                "btn-light": index !== selectedLanguageIndex,
-                                "btn-primary": index === selectedLanguageIndex,
-                              })}
-                              disabled={submitting}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setSelectedLanguageIndex(index);
-                              }}
-                            >
-                              {locale.displayName}
-                            </button>
-                          );
-                        })}
+                        {languageSettings.map(({ locale }, index) => (
+                          <LanguageSettingButton
+                            isSelected={index === selectedLanguageIndex}
+                            locale={locale}
+                            disabled={submitting}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setSelectedLanguageIndex(index);
+                            }}
+                            deleteSetting={() => {
+                              setLanguageSettings(
+                                removeAtIndex(languageSettings, index)
+                              );
+                            }}
+                          />
+                        ))}
+                        <AddLanguageSettingButton
+                          onClick={() => {}}
+                          disabled={submitting}
+                        />
                       </div>
                     </div>
                   </div>
@@ -146,11 +147,18 @@ export const App = () => {
                     <h4>Pre made phrases</h4>
                     <div className="d-flex flex-wrap flex-row">
                       {presetPhrases.map((text) => (
-                        <PresetPhraseButton
-                          text={text}
+                        <button
+                          key={text}
+                          onClick={() => processTextToSpeech(text)}
+                          className={className({
+                            btn: true,
+                            flex: true,
+                            "btn-phrase": true,
+                          })}
                           disabled={submitting}
-                          processTextToSpeech={presetLanguageSettings}
-                        />
+                        >
+                          {text}
+                        </button>
                       ))}
                     </div>
                   </div>

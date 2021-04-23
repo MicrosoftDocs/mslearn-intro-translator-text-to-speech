@@ -1,4 +1,4 @@
 export * from "./formControls";
-export * from "./LanguageSettings";
-export * from "./PresetPhraseButton";
+export * from "./LanguageSettingsEditor";
+export * from "./LanguageSettingButton";
 export * from "./TranslationResults";

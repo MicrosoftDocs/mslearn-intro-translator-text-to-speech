@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { SelectField } from "../formControls";
 import { getVoicesForLocale } from "../../api";
 
-export const LanguageSettings = ({
+export const LanguageSettingsEditor = ({
   updateCurrentLanguageSetting,
   currentLanguageSetting,
   availableLocales,

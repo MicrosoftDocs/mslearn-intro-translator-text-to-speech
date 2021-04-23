@@ -1,0 +1,38 @@
+.LanguageSettingButton {
+  position: relative;
+}
+
+.LanguageSettingButton__close {
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  width: 20px;
+  height: 20px;
+  background: white;
+  border-radius: 50%;
+  border: transparent 1px solid;
+}
+
+.LanguageSettingButton__close:hover {
+  cursor: pointer;
+  border: black 1px solid;
+}
+
+.LanguageSettingButton__close img {
+  position: absolute;
+  top: -1px;
+  right: -1px;
+  width: 20px;
+  height: 20px;
+  background: transparent;
+  border: none;
+}
+
+.AddLanguageSettingButton:hover {
+  border: 1px solid black;
+}
+
+.AddLanguageSettingButton__icon {
+  height: 20px;
+  margin: 2px 8px 0 0;
+}
