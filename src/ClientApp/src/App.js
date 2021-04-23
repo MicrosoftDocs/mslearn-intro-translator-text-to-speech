@@ -128,6 +128,7 @@ export const App = () => {
                               setSelectedLanguageIndex(index);
                             }}
                             deleteSetting={() => {
+                              setSelectedLanguageIndex(index - 1);
                               setLanguageSettings(
                                 removeAtIndex(languageSettings, index)
                               );
@@ -135,7 +136,23 @@ export const App = () => {
                           />
                         ))}
                         <AddLanguageSettingButton
-                          onClick={() => {}}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const languages = [
+                              ...languageSettings,
+                              {
+                                locale: {
+                                  ...availableLocales[0],
+                                  value: availableLocales[0].locale,
+                                  label: availableLocales[0].displayName,
+                                },
+                                voice: undefined,
+                              },
+                            ];
+                            debugger;
+                            setLanguageSettings(languages);
+                            setSelectedLanguageIndex(languages.length - 1);
+                          }}
                           disabled={submitting}
                         />
                       </div>

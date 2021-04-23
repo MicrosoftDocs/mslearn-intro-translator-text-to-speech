@@ -25,10 +25,18 @@ export const LanguageSettingsEditor = ({
         value: v.voiceShortName,
         label: v.displayName,
       }));
+      if (!currentLanguageSetting.voice) {
+        const updatedSetting = {
+          ...currentLanguageSetting,
+          voice: updatedVoices[0],
+        };
+        updateCurrentLanguageSetting(updatedSetting);
+        return;
+      }
       setAvailableVoices(updatedVoices);
     };
     getVoicesForSelectedLocale();
-  }, [currentLanguageSetting]);
+  }, [currentLanguageSetting, updateCurrentLanguageSetting]);
   return (
     <div className="row">
       <div className="col-6">

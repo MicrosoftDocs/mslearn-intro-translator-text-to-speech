@@ -6,6 +6,7 @@ import className from "classnames";
 import "./TranslationResults.css";
 import { STATUS } from "../../constants";
 import { wait } from "../../utility";
+import { Loader } from "../Loader";
 
 const typingDelay = 50;
 
@@ -19,6 +20,7 @@ const getTranslationDelay = (text, audioDuration) => {
 export const TranslationResults = ({ results, processingStatus }) => {
   const hasResults =
     processingStatus === STATUS.success && results && results.length > 0;
+  const isLoading = processingStatus === STATUS.pending;
   useEffect(() => {
     const playAudio = async (results) => {
       for (let index = 0; index < results.length; index++) {
@@ -31,6 +33,11 @@ export const TranslationResults = ({ results, processingStatus }) => {
       playAudio(results);
     }
   }, [results, hasResults]);
+
+  if (isLoading) {
+    return <Loader />;
+  }
+
   return (
     <div
       className={className({
