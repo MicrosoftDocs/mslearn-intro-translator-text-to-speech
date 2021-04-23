@@ -7,6 +7,7 @@ import {
   LanguageSettings,
   TextAreaField,
   TranslationResults,
+  PresetPhraseButton,
 } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
@@ -145,18 +146,11 @@ export const App = () => {
                     <h4>Pre made phrases</h4>
                     <div className="d-flex flex-wrap flex-row">
                       {presetPhrases.map((text) => (
-                        <button
-                          key={text}
-                          onClick={() => processTextToSpeech(text)}
-                          className={className({
-                            btn: true,
-                            flex: true,
-                            "btn-phrase": true,
-                          })}
+                        <PresetPhraseButton
+                          text={text}
                           disabled={submitting}
-                        >
-                          {text}
-                        </button>
+                          processTextToSpeech={presetLanguageSettings}
+                        />
                       ))}
                     </div>
                   </div>
