@@ -4,12 +4,15 @@ import className from "classnames";
 // local imports
 import "./App.css";
 import {
-  LanguageSettings,
+  LanguageSettingsEditor,
   TextAreaField,
   TranslationResults,
+  LanguageSettingButton,
+  AddLanguageSettingButton,
 } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
+import { removeAtIndex } from "./utility";
 
 export const App = () => {
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
@@ -77,7 +80,7 @@ export const App = () => {
         </header>
         <div className="row py-4">
           <div className="col-6">
-            <LanguageSettings
+            <LanguageSettingsEditor
               availableLocales={availableLocales}
               currentLanguageSetting={languageSettings[selectedLanguageIndex]}
               updateCurrentLanguageSetting={(updatedValue) => {
@@ -115,27 +118,43 @@ export const App = () => {
                     <h4>Selected languages</h4>
                     <div className="row">
                       <div className="col  d-flex flex-wrap">
-                        {languageSettings.map(({ locale }, index) => {
-                          return (
-                            <button
-                              key={locale.locale}
-                              className={className({
-                                btn: true,
-                                flex: true,
-                                "btn-language": true,
-                                "btn-light": index !== selectedLanguageIndex,
-                                "btn-primary": index === selectedLanguageIndex,
-                              })}
-                              disabled={submitting}
-                              onClick={(e) => {
-                                e.preventDefault();
-                                setSelectedLanguageIndex(index);
-                              }}
-                            >
-                              {locale.displayName}
-                            </button>
-                          );
-                        })}
+                        {languageSettings.map(({ locale }, index) => (
+                          <LanguageSettingButton
+                            isSelected={index === selectedLanguageIndex}
+                            locale={locale}
+                            disabled={submitting}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              setSelectedLanguageIndex(index);
+                            }}
+                            deleteSetting={() => {
+                              setSelectedLanguageIndex(index - 1);
+                              setLanguageSettings(
+                                removeAtIndex(languageSettings, index)
+                              );
+                            }}
+                          />
+                        ))}
+                        <AddLanguageSettingButton
+                          onClick={(e) => {
+                            e.preventDefault();
+                            const languages = [
+                              ...languageSettings,
+                              {
+                                locale: {
+                                  ...availableLocales[0],
+                                  value: availableLocales[0].locale,
+                                  label: availableLocales[0].displayName,
+                                },
+                                voice: undefined,
+                              },
+                            ];
+                            debugger;
+                            setLanguageSettings(languages);
+                            setSelectedLanguageIndex(languages.length - 1);
+                          }}
+                          disabled={submitting}
+                        />
                       </div>
                     </div>
                   </div>

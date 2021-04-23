@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { SelectField } from "../formControls";
 import { getVoicesForLocale } from "../../api";
 
-export const LanguageSettings = ({
+export const LanguageSettingsEditor = ({
   updateCurrentLanguageSetting,
   currentLanguageSetting,
   availableLocales,
@@ -25,10 +25,18 @@ export const LanguageSettings = ({
         value: v.voiceShortName,
         label: v.displayName,
       }));
+      if (!currentLanguageSetting.voice) {
+        const updatedSetting = {
+          ...currentLanguageSetting,
+          voice: updatedVoices[0],
+        };
+        updateCurrentLanguageSetting(updatedSetting);
+        return;
+      }
       setAvailableVoices(updatedVoices);
     };
     getVoicesForSelectedLocale();
-  }, [currentLanguageSetting]);
+  }, [currentLanguageSetting, updateCurrentLanguageSetting]);
   return (
     <div className="row">
       <div className="col-6">
