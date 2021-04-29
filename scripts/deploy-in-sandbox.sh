@@ -63,7 +63,7 @@ az webapp create \
 az webapp config appsettings set \
     --resource-group $resourceGroupName \
     --name $webAppName \
-    --settings SpeechService:Endpoint=$endpointSpeech SpeechService:ApiKey=$apiKeySpeech SpeechService:Region=westus2 Translator:ApiKey=$apiKeyText Translator:Region=westus2 BlobStorage:ConnectionString=$blobConnectionString
+    --settings SpeechService:Endpoint=$endpointSpeech SpeechService:ApiKey=$apiKeySpeech SpeechService:Region=westus2 Translator:ApiKey=$apiKeyText Translator:Region=westus2 BlobStorage:ConnectionString=$blobConnectionString BlobStorage:ContainerName=$blobContainerName
 
 # deploy to webapp
 az webapp deployment source config-zip \
