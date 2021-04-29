@@ -74,11 +74,9 @@ az webapp deployment source config-zip \
 echo "Select the hyperlink below to see Translator and Text-to-speech in action"
 echo https://$webAppName.azurewebsites.net
 
------------- OLD BELOW HERE
-TextTranslation
-SpeechServices
+### ------------ OLD BELOW HERE FOR REFERENCE
 # Create Azure Cogntive Services account and put key and endpoint into variables
-az cognitiveservices account create \
+: ' az cognitiveservices account create \
     --name cognitive-services-account-resource \
     --resource-group $resourceGroupName \
     --kind FormRecognizer \
@@ -109,4 +107,4 @@ az webapp deployment source config-zip \
     --src source.zip
 
 echo https://$webAppName.azurewebsites.net
-echo "Select the hyperlink above to see Form Recognizer in action"
+echo "Select the hyperlink above to see Form Recognizer in action"'
