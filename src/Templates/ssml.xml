@@ -1,8 +1,8 @@
 <speak xmlns="http://www.w3.org/2001/10/synthesis" xmlns:mstts="http://www.w3.org/2001/mstts" version="1.0" xml:lang="en-US">
-    <voice name="en-US-JennyNeural">
-        <mstts:express-as style="d" styledegree="1">
-            <prosody rate="default" pitch="default">
-                {0}
+    <voice name="{0}">
+        <mstts:express-as style="{1}" styledegree="{2}">
+            <prosody rate="{3}" pitch="{4}">
+                {5}
             </prosody>
         </mstts:express-as>
     </voice>
