@@ -30,7 +30,7 @@ export const TextAreaField = ({
           })}
           onChange={(e) => onChange(e.target.value)}
           value={value ? value : ""}
-          autoComplete="nope"
+          autoComplete="false"
         />
         {errorMessage ? <p className="error">{errorMessage}</p> : null}
       </>

@@ -41,6 +41,7 @@ export const App = () => {
         languageSettings.map((setting) => ({
           targetLanguage: setting.locale.language,
           voiceName: setting.voice.voiceShortName,
+          adjustments: setting.adjustments,
         }))
       );
       setTranslationResults(response);
@@ -50,6 +51,9 @@ export const App = () => {
     }
   };
 
+  /**
+   * Get and set available locales on first render
+   */
   useEffect(() => {
     const getAndSetAvailableLocales = async () => {
       const response = await getLocales();
@@ -101,7 +105,7 @@ export const App = () => {
                   e.preventDefault();
                   processTextToSpeech(textToTranslate);
                 }}
-                autoComplete={false}
+                autoComplete="false"
               >
                 <TextAreaField
                   name="text"
@@ -120,6 +124,7 @@ export const App = () => {
                       <div className="col  d-flex flex-wrap">
                         {languageSettings.map(({ locale }, index) => (
                           <LanguageSettingButton
+                            key={locale.locale}
                             isSelected={index === selectedLanguageIndex}
                             locale={locale}
                             disabled={submitting}

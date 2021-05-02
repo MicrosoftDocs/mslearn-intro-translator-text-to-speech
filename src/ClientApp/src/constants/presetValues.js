@@ -1,3 +1,4 @@
+import { adjustments } from "./adjustments";
 export const presetPhrases = [
   "Flight BC767 is now boarding",
   "Flight DAN119 ahs been delayed",
@@ -18,6 +19,11 @@ export const presetLanguageSettings = [
       value: "en-US-JennyNeural",
       displayName: "Jenny (Neural)",
       label: "Jenny (Neural)",
+    },
+    adjustments: {
+      pitch: adjustments.pitch.defaultValue,
+      rate: adjustments.rate.defaultValue,
+      style: adjustments.style.defaultValue,
     },
   },
   {

@@ -24,9 +24,10 @@ export const LanguageSettingButton = ({
       disabled={disabled}
       onClick={onClick}
     >
-      <button
+      <span
+        role="button"
         aria-label="Remove language setting"
-        class="LanguageSettingButton__close"
+        className="LanguageSettingButton__close"
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
@@ -34,7 +35,7 @@ export const LanguageSettingButton = ({
         }}
       >
         <img alt="Remove language setting" src={closeIcon}></img>
-      </button>
+      </span>
       {locale.displayName}
     </button>
   );
