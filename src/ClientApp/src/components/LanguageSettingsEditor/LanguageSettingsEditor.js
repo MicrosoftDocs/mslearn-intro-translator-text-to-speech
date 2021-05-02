@@ -94,29 +94,37 @@ export const LanguageSettingsEditor = ({
     );
     const adjustmentOptions = voice.styles;
     return (
-      <SelectField
-        name={adjustments.style.name}
-        value={
-          adjustmentOptions[currentLanguageSetting.adjustments.style].styleName
-        }
-        options={adjustmentOptions.map((v) => ({
-          ...v,
-          value: v.styleName,
-          label: v.displayName,
-        }))}
-        onChange={(option) => {
-          if (currentLanguageSetting.locale.locale === option.value) {
-            return;
-          }
-          const updatedSetting = {
-            ...currentLanguageSetting,
-            locale: option,
-            voice: undefined,
-          };
-          updateCurrentLanguageSetting(updatedSetting);
-        }}
-        disabled={submitting}
-      />
+      <>
+        <label>Style</label>
+        <SelectField
+          name={adjustments.style.name}
+          value={{
+            value:
+              adjustmentOptions[currentLanguageSetting.adjustments.style]
+                .styleName,
+            label:
+              adjustmentOptions[currentLanguageSetting.adjustments.style]
+                .displayName,
+          }}
+          options={adjustmentOptions.map((v) => ({
+            ...v,
+            value: v.styleName,
+            label: v.displayName,
+          }))}
+          onChange={(option) => {
+            if (currentLanguageSetting.locale.locale === option.value) {
+              return;
+            }
+            const updatedSetting = {
+              ...currentLanguageSetting,
+              locale: option,
+              voice: undefined,
+            };
+            updateCurrentLanguageSetting(updatedSetting);
+          }}
+          disabled={submitting}
+        />
+      </>
     );
   };
   console.log(currentLanguageSetting);
