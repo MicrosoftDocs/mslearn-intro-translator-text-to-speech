@@ -19,6 +19,8 @@ namespace CognitiveServicesDemo.TextToSpeech.Models
 
         [Required]
         public string VoiceName { get; set; }
+
+        public Adjustments Adjustments { get; set; }
     }
 
     public class TextToSpeechRequest
@@ -28,5 +30,16 @@ namespace CognitiveServicesDemo.TextToSpeech.Models
         public string TranslatedText { get; set; }
 
         public string TTSAudioUrl { get; set; }
+    }
+
+    public class Adjustments
+    {
+        public string Style { get; set; }
+
+        public double StyleDegree { get; set; } = 1;
+
+        public string Pitch { get; set; } = "default";
+
+        public double Rate { get; set; } = 1;
     }
 }

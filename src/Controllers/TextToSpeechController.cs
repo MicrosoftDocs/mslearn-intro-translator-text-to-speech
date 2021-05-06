@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using CognitiveServicesDemo.TextToSpeech.Models;
@@ -68,7 +66,7 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
                     }).ToList();
 
                 // Send to speech service
-                await _textToSpeechService.SynthesisToFileAsync(ttsRequests);
+                await _textToSpeechService.SynthesizeToFileAsync(ttsRequests);
 
                 return Ok(ttsRequests);
             }
@@ -97,8 +95,13 @@ namespace CognitiveServicesDemo.TextToSpeech.Controllers
                 {
                     return BadRequest("VoiceName is required");
                 }
+
+                if (ttsRequest.Adjustments != null && string.IsNullOrWhiteSpace(ttsRequest.Adjustments.Style))
+                {
+                    return BadRequest("Style is required");
+                }
             }
-            
+
             return Ok();
         }
     }
