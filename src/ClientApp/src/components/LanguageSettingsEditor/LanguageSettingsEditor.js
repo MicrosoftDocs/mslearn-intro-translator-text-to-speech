@@ -1,37 +1,12 @@
 import React, { useEffect, useState } from "react";
 
 // local imports
+import "./LanguageSettingsEditor.css";
 import { SelectField, RangeField } from "../formControls";
 import { getVoicesForLocale } from "../../api";
-import { adjustments } from "../../constants";
-import { getItemByProperty } from "../../utility";
-
-const voiceHasAdjustment = (
-  adjustmentName,
-  voiceShortName,
-  availableVoices
-) => {
-  const voice = getItemByProperty(
-    "voiceShortName",
-    voiceShortName,
-    availableVoices
-  );
-  if (!voice) {
-    return false;
-  }
-  switch (adjustmentName) {
-    case adjustments.pitch.name:
-    case adjustments.rate.name: {
-      const adjustmentOptions = voice[`${adjustmentName}Options`];
-      return !!adjustmentOptions;
-    }
-    case adjustments.style.name: {
-      return voice.styles && voice.styles.length > 0;
-    }
-    default:
-      return false;
-  }
-};
+import { adjustments, STATUS } from "../../constants";
+import { getDefaultVoiceAdjustments } from "../../utility";
+import { usePrevious } from "../../hooks";
 
 export const LanguageSettingsEditor = ({
   updateCurrentLanguageSetting,
@@ -40,16 +15,30 @@ export const LanguageSettingsEditor = ({
   submitting,
 }) => {
   const [availableVoices, setAvailableVoices] = useState([]);
+  const [loadingStatus, setLoadingStatus] = useState(STATUS.idle);
+  const prevLanguageSetting = usePrevious(currentLanguageSetting);
+  const shouldFetchVoices =
+    !availableVoices ||
+    (prevLanguageSetting &&
+      currentLanguageSetting.locale !== prevLanguageSetting.locale) ||
+    !currentLanguageSetting.voice;
 
   /**
-   * Get and set locales based on the current selected language provided
+   * Determines and updates if the voices for the current settings need to be loaded again
+   * by setting a status
+   */
+  useEffect(() => {
+    if (shouldFetchVoices) {
+      setLoadingStatus(STATUS.idle);
+    }
+  }, [shouldFetchVoices]);
+
+  /**
+   * Get and set voices based on the currently selected local if it hasn't already been fetched
    */
   useEffect(() => {
     const getVoicesForSelectedLocale = async () => {
-      if (!currentLanguageSetting?.locale) {
-        setAvailableVoices(undefined);
-        return;
-      }
+      setLoadingStatus(STATUS.pending);
       const voices = await getVoicesForLocale(
         currentLanguageSetting.locale.locale
       );
@@ -57,82 +46,69 @@ export const LanguageSettingsEditor = ({
         ...v,
         value: v.voiceShortName,
         label: v.displayName,
+        adjustments: getDefaultVoiceAdjustments(v),
       }));
       if (!currentLanguageSetting.voice) {
+        const defaultVoice = updatedVoices[0];
         const updatedSetting = {
           ...currentLanguageSetting,
-          voice: updatedVoices[0],
+          voice: defaultVoice,
         };
         updateCurrentLanguageSetting(updatedSetting);
-        return;
       }
       setAvailableVoices(updatedVoices);
+      setLoadingStatus(STATUS.success);
     };
-    getVoicesForSelectedLocale();
-  }, [currentLanguageSetting, updateCurrentLanguageSetting]);
+    if (shouldFetchVoices && loadingStatus === STATUS.idle) {
+      getVoicesForSelectedLocale();
+    }
+  }, [
+    availableVoices,
+    currentLanguageSetting,
+    loadingStatus,
+    shouldFetchVoices,
+    updateCurrentLanguageSetting,
+  ]);
 
-  const updateAdjustment = (name, value) => {
+  const updateRangeAdjustment = (name, value) => {
     const updatedSetting = {
       ...currentLanguageSetting,
-      adjustments: {
-        ...currentLanguageSetting.adjustments,
-        [name]: value,
+      voice: {
+        ...currentLanguageSetting.voice,
+        adjustments: {
+          ...currentLanguageSetting.voice.adjustments,
+          [name]: value,
+        },
       },
     };
     updateCurrentLanguageSetting(updatedSetting);
   };
 
-  if (!availableVoices || availableVoices.length === 0) {
+  const getStyleOptions = () => {
+    const styles = currentLanguageSetting.voice.styles;
+    if (!styles || styles.length === 0) {
+      return [];
+    }
+    return styles.map((v) => ({
+      ...v,
+      value: v.styleName,
+      label: v.displayName,
+    }));
+  };
+
+  if (
+    shouldFetchVoices ||
+    loadingStatus === STATUS.idle ||
+    loadingStatus === STATUS.pending
+  ) {
     return null;
   }
-
-  const renderStyleDropdown = () => {
-    const voice = getItemByProperty(
-      "voiceShortName",
-      currentLanguageSetting.voice.voiceShortName,
-      availableVoices
-    );
-    const adjustmentOptions = voice.styles;
-    return (
-      <>
-        <label>Style</label>
-        <SelectField
-          name={adjustments.style.name}
-          value={{
-            value:
-              adjustmentOptions[currentLanguageSetting.adjustments.style]
-                .styleName,
-            label:
-              adjustmentOptions[currentLanguageSetting.adjustments.style]
-                .displayName,
-          }}
-          options={adjustmentOptions.map((v) => ({
-            ...v,
-            value: v.styleName,
-            label: v.displayName,
-          }))}
-          onChange={(option) => {
-            if (currentLanguageSetting.locale.locale === option.value) {
-              return;
-            }
-            const updatedSetting = {
-              ...currentLanguageSetting,
-              locale: option,
-              voice: undefined,
-            };
-            updateCurrentLanguageSetting(updatedSetting);
-          }}
-          disabled={submitting}
-        />
-      </>
-    );
-  };
-  console.log(currentLanguageSetting);
   return (
-    <div className="row">
-      <div className="col-4">
+    <div className="LanguageSettingsEditor d-flex flex-row">
+      <div className="pr-2">
         <SelectField
           name="locale"
+          label="Locale"
           placeholder="Select some target locales"
           errorMessage="Please select a target language."
           value={currentLanguageSetting.locale}
@@ -155,9 +131,10 @@ export const LanguageSettingsEditor = ({
           disabled={submitting}
         />
       </div>
-      <div className="col-4">
+      <div className="pr-2">
         <SelectField
           name="voice"
+          label="Voice"
           placeholder="Select a voice"
           errorMessage="Please select a voice."
           options={availableVoices.map((v) => ({
@@ -174,53 +151,73 @@ export const LanguageSettingsEditor = ({
             ) {
               return;
             }
-            const updatedSetting = {
+            updateCurrentLanguageSetting({
               ...currentLanguageSetting,
               voice: option,
-            };
-            updateCurrentLanguageSetting(updatedSetting);
+            });
           }}
         />
       </div>
-      <div className="col-4">
-        {voiceHasAdjustment(
-          adjustments.pitch.name,
-          currentLanguageSetting.voice.voiceShortName,
-          availableVoices
-        ) ? (
+      {!currentLanguageSetting.voice.adjustments.style ||
+      currentLanguageSetting.voice.adjustments.style.length === 0 ? (
+        <div className="pr-2">
+          <label>Style</label>
+          <SelectField
+            name={adjustments.style.name}
+            value={currentLanguageSetting.voice.adjustments.style}
+            options={getStyleOptions()}
+            onChange={(option) => {
+              const currentStyle =
+                currentLanguageSetting.voice.adjustments.style.value;
+              if (currentStyle === option.value) {
+                return;
+              }
+              updateCurrentLanguageSetting({
+                ...currentLanguageSetting,
+                voice: {
+                  ...currentLanguageSetting.voice,
+                  adjustments: {
+                    ...currentLanguageSetting.voice.adjustments,
+                    style: option,
+                  },
+                },
+              });
+            }}
+            disabled={submitting}
+          />
+        </div>
+      ) : null}
+      {currentLanguageSetting.voice.adjustments.pitch ? (
+        <div className="pr-2">
           <RangeField
             name={adjustments.pitch.name}
             label={adjustments.pitch.displayName}
             onChange={(value) =>
-              updateAdjustment(adjustments.pitch.name, value)
+              updateRangeAdjustment(adjustments.rate.name, value)
             }
-            value={currentLanguageSetting.adjustments.pitch}
+            value={currentLanguageSetting.voice.adjustments.pitch}
             min={0}
-            max={5}
+            max={10}
+            disabled={submitting}
           />
-        ) : null}
-        {voiceHasAdjustment(
-          adjustments.rate.name,
-          currentLanguageSetting.voice.voiceShortName,
-          availableVoices
-        ) ? (
+        </div>
+      ) : null}
+      {currentLanguageSetting.voice.adjustments.rate ? (
+        <div>
           <RangeField
             name={adjustments.rate.name}
             label={adjustments.rate.displayName}
-            onChange={(value) => updateAdjustment(adjustments.rate.name, value)}
-            value={currentLanguageSetting.adjustments.rate}
+            onChange={(value) =>
+              updateRangeAdjustment(adjustments.rate.name, value)
+            }
+            value={currentLanguageSetting.voice.adjustments.rate}
             min={0}
-            max={5}
+            max={300}
+            disabled={submitting}
           />
-        ) : null}
-        {voiceHasAdjustment(
-          adjustments.style.name,
-          currentLanguageSetting.voice.voiceShortName,
-          availableVoices
-        )
-          ? renderStyleDropdown()
-          : null}
-      </div>
+        </div>
+      ) : null}
+      <div></div>
     </div>
   );
 };

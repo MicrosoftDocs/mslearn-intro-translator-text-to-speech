@@ -1,3 +1,5 @@
+import './RangeField.css'
+
 export const RangeField = ({
   name,
   label,
@@ -8,7 +10,7 @@ export const RangeField = ({
   max,
 }) => {
   return (
-    <div className="RangeField form-group">
+    <div className="RangeField form-group flex flex-column">
       {label ? <label htmlFor={name}>{label}</label> : null}
       <input
         id={name}

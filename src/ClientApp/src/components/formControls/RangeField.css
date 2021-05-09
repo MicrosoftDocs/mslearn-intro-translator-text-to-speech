@@ -1,0 +1,12 @@
+.RangeField {
+  margin-bottom: 0;
+  height: 100%;
+}
+
+.RangeField label {
+  flex-grow: 1;
+}
+
+.RangeField .form-control-range {
+  flex-grow: 2;
+}

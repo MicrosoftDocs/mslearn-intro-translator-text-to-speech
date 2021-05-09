@@ -9,10 +9,11 @@ import {
   TranslationResults,
   LanguageSettingButton,
   AddLanguageSettingButton,
+  Loader,
 } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
-import { removeAtIndex } from "./utility";
+import { removeAtIndex, getAdjustmentRangeValue } from "./utility";
 
 export const App = () => {
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
@@ -41,7 +42,17 @@ export const App = () => {
         languageSettings.map((setting) => ({
           targetLanguage: setting.locale.language,
           voiceName: setting.voice.voiceShortName,
-          adjustments: setting.adjustments,
+          adjustments: {
+            pitch: getAdjustmentRangeValue(
+              "pitch",
+              setting.voice.adjustments.pitch
+            ),
+            rate: getAdjustmentRangeValue(
+              "rate",
+              setting.voice.adjustments.rate
+            ),
+            style: setting.voice.adjustments.style.value,
+          },
         }))
       );
       setTranslationResults(response);
@@ -63,7 +74,7 @@ export const App = () => {
   }, []);
 
   if (!availableLocales || availableLocales.length === 0) {
-    return null;
+    return <Loader />;
   }
   return (
     <>
@@ -84,16 +95,19 @@ export const App = () => {
         </header>
         <div className="row py-4">
           <div className="col-6">
-            <LanguageSettingsEditor
-              availableLocales={availableLocales}
-              currentLanguageSetting={languageSettings[selectedLanguageIndex]}
-              updateCurrentLanguageSetting={(updatedValue) => {
-                const updatedSettings = [...languageSettings];
-                updatedSettings[selectedLanguageIndex] = updatedValue;
-                setLanguageSettings(updatedSettings);
-              }}
-              submitting={submitting}
-            />
+            {languageSettings.length > 0 &&
+            languageSettings[selectedLanguageIndex] ? (
+              <LanguageSettingsEditor
+                availableLocales={availableLocales}
+                currentLanguageSetting={languageSettings[selectedLanguageIndex]}
+                updateCurrentLanguageSetting={(updatedValue) => {
+                  const updatedSettings = [...languageSettings];
+                  updatedSettings[selectedLanguageIndex] = updatedValue;
+                  setLanguageSettings(updatedSettings);
+                }}
+                submitting={submitting}
+              />
+            ) : null}
           </div>
         </div>
         <div className="row py-4">
@@ -154,7 +168,6 @@ export const App = () => {
                                 voice: undefined,
                               },
                             ];
-                            debugger;
                             setLanguageSettings(languages);
                             setSelectedLanguageIndex(languages.length - 1);
                           }}
