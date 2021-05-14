@@ -16,6 +16,9 @@ export const SelectField = ({
   const [isOpen, setIsOpen] = useState();
   const ref = useRef(null);
   useOnClickOutside(ref, () => setIsOpen(false));
+  if (!options) {
+    return null;
+  }
   return (
     <div className="SelectField form-group">
       {label ? <label htmlFor={name}>{label}</label> : null}
@@ -38,19 +41,30 @@ export const SelectField = ({
           className={className({ "dropdown-menu": true, show: isOpen })}
           aria-labelledby="modelSelectButton"
         >
-          {options.map((option) => (
+          {options.length > 0 ? (
+            options.map((option) => (
+              <button
+                key={option.value}
+                className="dropdown-item"
+                onClick={(e) => {
+                  e.preventDefault();
+                  onChange(option);
+                  setIsOpen(!isOpen);
+                }}
+              >
+                {option.label}
+              </button>
+            ))
+          ) : (
             <button
-              key={option.value}
               className="dropdown-item"
               onClick={(e) => {
                 e.preventDefault();
-                onChange(option);
-                setIsOpen(!isOpen);
               }}
             >
-              {option.label}
+              "Not enabled"
             </button>
-          ))}
+          )}
         </div>
       </div>
     </div>

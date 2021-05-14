@@ -9,10 +9,11 @@ import {
   TranslationResults,
   LanguageSettingButton,
   AddLanguageSettingButton,
+  Loader,
 } from "./components";
 import { presetPhrases, presetLanguageSettings, STATUS } from "./constants";
 import { synthesizeText, getLocales } from "./api";
-import { removeAtIndex } from "./utility";
+import { removeAtIndex, getAdjustmentRangeValue } from "./utility";
 
 export const App = () => {
   const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
@@ -23,8 +24,11 @@ export const App = () => {
   const [validationError, setValidationError] = useState();
   const [availableLocales, setAvailableLocales] = useState([]);
   const [processingStatus, setProcessingStatus] = useState(STATUS.idle);
-  const submitting = processingStatus === STATUS.pending;
   const [translationResults, setTranslationResults] = useState([]);
+
+  const submitting = processingStatus === STATUS.pending;
+  const showLanguageSettings =
+    languageSettings.length > 0 && languageSettings[selectedLanguageIndex];
 
   const processTextToSpeech = async (text) => {
     try {
@@ -33,6 +37,8 @@ export const App = () => {
           "You must enter text or select a pre-made phrase below"
         );
         return;
+      } else {
+        setValidationError(undefined);
       }
       setProcessingStatus(STATUS.pending);
       setTranslationResults([]);
@@ -41,6 +47,17 @@ export const App = () => {
         languageSettings.map((setting) => ({
           targetLanguage: setting.locale.language,
           voiceName: setting.voice.voiceShortName,
+          adjustments: {
+            pitch: getAdjustmentRangeValue(
+              "pitch",
+              setting.voice.adjustments.pitch
+            ),
+            rate: getAdjustmentRangeValue(
+              "rate",
+              setting.voice.adjustments.rate
+            ),
+            style: setting.voice.adjustments.style?.value,
+          },
         }))
       );
       setTranslationResults(response);
@@ -50,6 +67,9 @@ export const App = () => {
     }
   };
 
+  /**
+   * Get and set available locales on first render
+   */
   useEffect(() => {
     const getAndSetAvailableLocales = async () => {
       const response = await getLocales();
@@ -59,7 +79,7 @@ export const App = () => {
   }, []);
 
   if (!availableLocales || availableLocales.length === 0) {
-    return null;
+    return <Loader />;
   }
   return (
     <>
@@ -78,21 +98,23 @@ export const App = () => {
             </p>
           </div>
         </header>
-        <div className="row py-4">
+        <div className="row py-3">
           <div className="col-6">
-            <LanguageSettingsEditor
-              availableLocales={availableLocales}
-              currentLanguageSetting={languageSettings[selectedLanguageIndex]}
-              updateCurrentLanguageSetting={(updatedValue) => {
-                const updatedSettings = [...languageSettings];
-                updatedSettings[selectedLanguageIndex] = updatedValue;
-                setLanguageSettings(updatedSettings);
-              }}
-              submitting={submitting}
-            />
+            {showLanguageSettings ? (
+              <LanguageSettingsEditor
+                availableLocales={availableLocales}
+                currentLanguageSetting={languageSettings[selectedLanguageIndex]}
+                updateCurrentLanguageSetting={(updatedValue) => {
+                  const updatedSettings = [...languageSettings];
+                  updatedSettings[selectedLanguageIndex] = updatedValue;
+                  setLanguageSettings(updatedSettings);
+                }}
+                submitting={submitting}
+              />
+            ) : null}
           </div>
         </div>
-        <div className="row py-4">
+        <div className="row py-3">
           <div className="col-6">
             <>
               <form
@@ -101,7 +123,7 @@ export const App = () => {
                   e.preventDefault();
                   processTextToSpeech(textToTranslate);
                 }}
-                autoComplete={false}
+                autoComplete="false"
               >
                 <TextAreaField
                   name="text"
@@ -113,13 +135,14 @@ export const App = () => {
                   disabled={submitting}
                   className="TranslatorTextInput"
                 />
-                <div className="row py-4">
+                <div className="row py-3">
                   <div className="col">
                     <h4>Selected languages</h4>
                     <div className="row">
                       <div className="col  d-flex flex-wrap">
                         {languageSettings.map(({ locale }, index) => (
                           <LanguageSettingButton
+                            key={index}
                             isSelected={index === selectedLanguageIndex}
                             locale={locale}
                             disabled={submitting}
@@ -128,10 +151,17 @@ export const App = () => {
                               setSelectedLanguageIndex(index);
                             }}
                             deleteSetting={() => {
-                              setSelectedLanguageIndex(index - 1);
-                              setLanguageSettings(
-                                removeAtIndex(languageSettings, index)
+                              debugger;
+                              const updatedLanguageSettings = removeAtIndex(
+                                languageSettings,
+                                index
                               );
+                              setSelectedLanguageIndex(
+                                updatedLanguageSettings.length <= 1
+                                  ? 0
+                                  : updatedLanguageSettings.length - 1
+                              );
+                              setLanguageSettings(updatedLanguageSettings);
                             }}
                           />
                         ))}
@@ -149,7 +179,6 @@ export const App = () => {
                                 voice: undefined,
                               },
                             ];
-                            debugger;
                             setLanguageSettings(languages);
                             setSelectedLanguageIndex(languages.length - 1);
                           }}
@@ -159,14 +188,17 @@ export const App = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row py-4">
+                <div className="row py-3">
                   <div className="col">
                     <h4>Pre made phrases</h4>
                     <div className="d-flex flex-wrap flex-row">
                       {presetPhrases.map((text) => (
                         <button
                           key={text}
-                          onClick={() => processTextToSpeech(text)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            processTextToSpeech(text);
+                          }}
                           className={className({
                             btn: true,
                             flex: true,

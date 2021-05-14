@@ -1,7 +1,7 @@
 export const presetPhrases = [
   "Flight BC767 is now boarding",
   "Flight DAN119 ahs been delayed",
-  "This is the final call for flight TM121 to Instanbul",
+  "This is the final call for flight TM121 to Istanbul",
 ];
 
 export const presetLanguageSettings = [
@@ -15,9 +15,30 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "en-US-JennyNeural",
-      value: "en-US-JennyNeural",
       displayName: "Jenny (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [
+        { styleName: "assistant", displayName: "Assistant" },
+        { styleName: "chat", displayName: "Chat" },
+        { styleName: "customerservice", displayName: "Customer Service" },
+        { styleName: "newscast", displayName: "News Cast" },
+      ],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "en-US-JennyNeural",
       label: "Jenny (Neural)",
+      adjustments: {
+        pitch: 5,
+        rate: 100,
+        style: {
+          styleName: "assistant",
+          displayName: "Assistant",
+          label: "Assistant",
+          value: "assistant",
+        },
+      },
     },
   },
   {
@@ -30,9 +51,16 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "fr-FR-DeniseNeural",
-      value: "fr-FR-DeniseNeural",
       displayName: "Denise (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "fr-FR-DeniseNeural",
       label: "Denise (Neural)",
+      adjustments: { pitch: 5, rate: 100 },
     },
   },
   {
@@ -45,9 +73,16 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "es-MX-DaliaNeural",
-      value: "es-MX-DaliaNeural",
       displayName: "Dalia (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "es-MX-DaliaNeural",
       label: "Dalia (Neural)",
+      adjustments: { pitch: 5, rate: 100 },
     },
   },
   {
@@ -60,9 +95,16 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "da-DK-ChristelNeural",
-      value: "da-DK-ChristelNeural",
       displayName: "Christel (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "da-DK-ChristelNeural",
       label: "Christel (Neural)",
+      adjustments: { pitch: 5, rate: 100 },
     },
   },
   {
@@ -75,9 +117,16 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "ja-JP-NanamiNeural",
-      value: "ja-JP-NanamiNeural",
       displayName: "Nanami (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "ja-JP-NanamiNeural",
       label: "Nanami (Neural)",
+      adjustments: { pitch: 5, rate: 100 },
     },
   },
   {
@@ -90,9 +139,16 @@ export const presetLanguageSettings = [
     },
     voice: {
       voiceShortName: "hi-IN-MadhurNeural",
-      value: "hi-IN-MadhurNeural",
       displayName: "Madhur (Neural)",
+      voiceType: "OnlineNeural",
+      isStyleDegreeSupported: false,
+      styles: [],
+      roles: [],
+      pitchOptions: ["x-low", "low", "medium", "high", "x-high", "default"],
+      rateOptions: ["x-slow", "slow", "medium", "fast", "x-fast", "default"],
+      value: "hi-IN-MadhurNeural",
       label: "Madhur (Neural)",
+      adjustments: { pitch: 5, rate: 100 },
     },
   },
 ];
