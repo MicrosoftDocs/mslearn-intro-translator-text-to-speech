@@ -37,6 +37,8 @@ export const App = () => {
           "You must enter text or select a pre-made phrase below"
         );
         return;
+      } else {
+        setValidationError(undefined);
       }
       setProcessingStatus(STATUS.pending);
       setTranslationResults([]);
