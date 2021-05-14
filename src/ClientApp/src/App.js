@@ -96,7 +96,7 @@ export const App = () => {
             </p>
           </div>
         </header>
-        <div className="row py-4">
+        <div className="row py-3">
           <div className="col-6">
             {showLanguageSettings ? (
               <LanguageSettingsEditor
@@ -112,7 +112,7 @@ export const App = () => {
             ) : null}
           </div>
         </div>
-        <div className="row py-4">
+        <div className="row py-3">
           <div className="col-6">
             <>
               <form
@@ -133,7 +133,7 @@ export const App = () => {
                   disabled={submitting}
                   className="TranslatorTextInput"
                 />
-                <div className="row py-4">
+                <div className="row py-3">
                   <div className="col">
                     <h4>Selected languages</h4>
                     <div className="row">
@@ -186,7 +186,7 @@ export const App = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row py-4">
+                <div className="row py-3">
                   <div className="col">
                     <h4>Pre made phrases</h4>
                     <div className="d-flex flex-wrap flex-row">
