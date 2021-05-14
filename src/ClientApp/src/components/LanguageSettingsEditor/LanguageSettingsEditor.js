@@ -17,11 +17,12 @@ export const LanguageSettingsEditor = ({
   const [availableVoices, setAvailableVoices] = useState([]);
   const [loadingStatus, setLoadingStatus] = useState(STATUS.idle);
   const prevLanguageSetting = usePrevious(currentLanguageSetting);
+
   const shouldFetchVoices =
-    !availableVoices ||
-    (prevLanguageSetting &&
-      currentLanguageSetting.locale !== prevLanguageSetting.locale) ||
-    !currentLanguageSetting.voice;
+    availableVoices.length === 0 ||
+    !currentLanguageSetting.voice ||
+    (prevLanguageSetting !== undefined &&
+      currentLanguageSetting.locale.value !== prevLanguageSetting.locale.value);
 
   /**
    * Determines and updates if the voices for the current settings need to be loaded again
@@ -48,6 +49,8 @@ export const LanguageSettingsEditor = ({
         label: v.displayName,
         adjustments: getDefaultVoiceAdjustments(v),
       }));
+
+      // if the setting doesn't have a voice then we need to set a default voice, style etc
       if (!currentLanguageSetting.voice) {
         const defaultVoice = updatedVoices[0];
         const updatedSetting = {
@@ -59,7 +62,7 @@ export const LanguageSettingsEditor = ({
       setAvailableVoices(updatedVoices);
       setLoadingStatus(STATUS.success);
     };
-    if (shouldFetchVoices && loadingStatus === STATUS.idle) {
+    if (shouldFetchVoices && loadingStatus !== STATUS.pending) {
       getVoicesForSelectedLocale();
     }
   }, [
@@ -103,6 +106,15 @@ export const LanguageSettingsEditor = ({
   ) {
     return null;
   }
+
+  const showStyleControl =
+    currentLanguageSetting.voice &&
+    currentLanguageSetting.voice.styles !== undefined &&
+    currentLanguageSetting.voice.styles.length > 0;
+  const showPitchControl =
+    currentLanguageSetting.voice.adjustments.pitch !== undefined;
+  const showRateControl =
+    currentLanguageSetting.voice.adjustments.rate !== undefined;
   return (
     <div className="LanguageSettingsEditor d-flex flex-row">
       <div className="pr-2">
@@ -158,8 +170,7 @@ export const LanguageSettingsEditor = ({
           }}
         />
       </div>
-      {!currentLanguageSetting.voice.adjustments.style ||
-      currentLanguageSetting.voice.adjustments.style.length === 0 ? (
+      {showStyleControl ? (
         <div className="pr-2">
           <label>Style</label>
           <SelectField
@@ -187,22 +198,22 @@ export const LanguageSettingsEditor = ({
           />
         </div>
       ) : null}
-      {currentLanguageSetting.voice.adjustments.pitch ? (
+      {showPitchControl ? (
         <div className="pr-2">
           <RangeField
             name={adjustments.pitch.name}
             label={adjustments.pitch.displayName}
             onChange={(value) =>
-              updateRangeAdjustment(adjustments.rate.name, value)
+              updateRangeAdjustment(adjustments.pitch.name, value)
             }
             value={currentLanguageSetting.voice.adjustments.pitch}
-            min={0}
+            min={1}
             max={10}
             disabled={submitting}
           />
         </div>
       ) : null}
-      {currentLanguageSetting.voice.adjustments.rate ? (
+      {showRateControl ? (
         <div>
           <RangeField
             name={adjustments.rate.name}

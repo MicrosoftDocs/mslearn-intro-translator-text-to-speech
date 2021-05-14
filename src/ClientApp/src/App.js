@@ -24,8 +24,11 @@ export const App = () => {
   const [validationError, setValidationError] = useState();
   const [availableLocales, setAvailableLocales] = useState([]);
   const [processingStatus, setProcessingStatus] = useState(STATUS.idle);
-  const submitting = processingStatus === STATUS.pending;
   const [translationResults, setTranslationResults] = useState([]);
+
+  const submitting = processingStatus === STATUS.pending;
+  const showLanguageSettings =
+    languageSettings.length > 0 && languageSettings[selectedLanguageIndex];
 
   const processTextToSpeech = async (text) => {
     try {
@@ -51,7 +54,7 @@ export const App = () => {
               "rate",
               setting.voice.adjustments.rate
             ),
-            style: setting.voice.adjustments.style.value,
+            style: setting.voice.adjustments.style?.value,
           },
         }))
       );
@@ -95,8 +98,7 @@ export const App = () => {
         </header>
         <div className="row py-4">
           <div className="col-6">
-            {languageSettings.length > 0 &&
-            languageSettings[selectedLanguageIndex] ? (
+            {showLanguageSettings ? (
               <LanguageSettingsEditor
                 availableLocales={availableLocales}
                 currentLanguageSetting={languageSettings[selectedLanguageIndex]}
@@ -138,7 +140,7 @@ export const App = () => {
                       <div className="col  d-flex flex-wrap">
                         {languageSettings.map(({ locale }, index) => (
                           <LanguageSettingButton
-                            key={locale.locale}
+                            key={index}
                             isSelected={index === selectedLanguageIndex}
                             locale={locale}
                             disabled={submitting}
@@ -147,10 +149,17 @@ export const App = () => {
                               setSelectedLanguageIndex(index);
                             }}
                             deleteSetting={() => {
-                              setSelectedLanguageIndex(index - 1);
-                              setLanguageSettings(
-                                removeAtIndex(languageSettings, index)
+                              debugger;
+                              const updatedLanguageSettings = removeAtIndex(
+                                languageSettings,
+                                index
                               );
+                              setSelectedLanguageIndex(
+                                updatedLanguageSettings.length <= 1
+                                  ? 0
+                                  : updatedLanguageSettings.length - 1
+                              );
+                              setLanguageSettings(updatedLanguageSettings);
                             }}
                           />
                         ))}
@@ -184,7 +193,10 @@ export const App = () => {
                       {presetPhrases.map((text) => (
                         <button
                           key={text}
-                          onClick={() => processTextToSpeech(text)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            processTextToSpeech(text);
+                          }}
                           className={className({
                             btn: true,
                             flex: true,

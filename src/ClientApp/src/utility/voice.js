@@ -14,7 +14,7 @@ export const getDefaultVoiceAdjustments = (voice) => {
 };
 
 export const getAdjustmentRangeValue = (adjustmentName, adjustmentValue) => {
-  if (!adjustmentName || !adjustmentValue) {
+  if (!adjustmentName || adjustmentValue === undefined) {
     return undefined;
   }
   switch (adjustmentName) {
@@ -25,8 +25,8 @@ export const getAdjustmentRangeValue = (adjustmentName, adjustmentValue) => {
         return "default";
       }
       return adjustmentValue > 5
-        ? `+${adjustmentValue - 5}`
-        : `-${adjustmentValue}`;
+        ? `+${adjustmentValue - 5}st`
+        : `-${adjustmentValue}st`;
     default: {
       return undefined;
     }
