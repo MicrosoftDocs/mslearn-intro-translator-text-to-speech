@@ -1,6 +1,6 @@
 export const presetPhrases = [
   "Flight BC767 is now boarding",
-  "Flight DAN119 ahs been delayed",
+  "Flight DAN119 has been delayed",
   "This is the final call for flight TM121 to Istanbul",
 ];
 
