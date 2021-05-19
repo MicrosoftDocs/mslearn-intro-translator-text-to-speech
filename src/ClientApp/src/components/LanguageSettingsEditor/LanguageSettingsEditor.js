@@ -108,13 +108,16 @@ export const LanguageSettingsEditor = ({
   }
 
   const showStyleControl =
-    currentLanguageSetting.voice &&
-    currentLanguageSetting.voice.styles !== undefined &&
-    currentLanguageSetting.voice.styles.length > 0;
-  const showPitchControl =
-    currentLanguageSetting.voice.adjustments.pitch !== undefined;
+  false;
+   // currentLanguageSetting.voice &&
+  //  currentLanguageSetting.voice.styles !== undefined &&
+  //  currentLanguageSetting.voice.styles.length > 0;
+  const showPitchControl = 
+  false;
+ //   currentLanguageSetting.voice.adjustments.pitch !== undefined;
   const showRateControl =
-    currentLanguageSetting.voice.adjustments.rate !== undefined;
+  false;
+ //   currentLanguageSetting.voice.adjustments.rate !== undefined;
   return (
     <div className="LanguageSettingsEditor d-flex flex-row">
       <div className="pr-2">
@@ -171,7 +174,7 @@ export const LanguageSettingsEditor = ({
         />
       </div>
       {showStyleControl ? (
-        <div className="pr-2">
+        <div className="pr-2 adjustments">
           <label>Style</label>
           <SelectField
             name={adjustments.style.name}
@@ -199,7 +202,7 @@ export const LanguageSettingsEditor = ({
         </div>
       ) : null}
       {showPitchControl ? (
-        <div className="pr-2">
+        <div className="pr-2 adjustments">
           <RangeField
             name={adjustments.pitch.name}
             label={adjustments.pitch.displayName}
