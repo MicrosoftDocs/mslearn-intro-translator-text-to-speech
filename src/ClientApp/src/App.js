@@ -98,20 +98,28 @@ export const App = () => {
             </p>
           </div>
         </header>
-        <div className="row py-3 adjustments">
-          <div className="col-6">
-            {showLanguageSettings ? (
-              <LanguageSettingsEditor
-                availableLocales={availableLocales}
-                currentLanguageSetting={languageSettings[selectedLanguageIndex]}
-                updateCurrentLanguageSetting={(updatedValue) => {
-                  const updatedSettings = [...languageSettings];
-                  updatedSettings[selectedLanguageIndex] = updatedValue;
-                  setLanguageSettings(updatedSettings);
-                }}
-                submitting={submitting}
-              />
-            ) : null}
+        <div className="row py-3">
+          <div className="col">
+            <h4>Pre made phrases</h4>
+            <div className="d-flex flex-wrap flex-row">
+              {presetPhrases.map((text) => (
+                <button
+                  key={text}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    processTextToSpeech(text);
+                  }}
+                  className={className({
+                    btn: true,
+                    flex: true,
+                    "btn-phrase": true,
+                  })}
+                  disabled={submitting}
+                >
+                  {text}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
         <div className="row py-3">
@@ -188,28 +196,20 @@ export const App = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row py-3">
-                  <div className="col">
-                    <h4>Pre made phrases</h4>
-                    <div className="d-flex flex-wrap flex-row">
-                      {presetPhrases.map((text) => (
-                        <button
-                          key={text}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            processTextToSpeech(text);
-                          }}
-                          className={className({
-                            btn: true,
-                            flex: true,
-                            "btn-phrase": true,
-                          })}
-                          disabled={submitting}
-                        >
-                          {text}
-                        </button>
-                      ))}
-                    </div>
+                <div className="row py-3 adjustments">
+                  <div className="col-6">
+                    {showLanguageSettings ? (
+                      <LanguageSettingsEditor
+                        availableLocales={availableLocales}
+                        currentLanguageSetting={languageSettings[selectedLanguageIndex]}
+                        updateCurrentLanguageSetting={(updatedValue) => {
+                          const updatedSettings = [...languageSettings];
+                          updatedSettings[selectedLanguageIndex] = updatedValue;
+                          setLanguageSettings(updatedSettings);
+                        }}
+                        submitting={submitting}
+                      />
+                    ) : null}
                   </div>
                 </div>
                 <div className="row">
