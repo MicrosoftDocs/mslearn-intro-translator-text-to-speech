@@ -196,7 +196,7 @@ export const App = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row py-3 adjustments">
+                <div className="row py-3">
                   <div className="col-6">
                     {showLanguageSettings ? (
                       <LanguageSettingsEditor
