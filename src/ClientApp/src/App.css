@@ -1,3 +1,7 @@
+.adjustments { 
+  display : none;
+}
+
 body {
   font-family: Segoe UI, sans-serif;
   background: url(./images/background.jpg) no-repeat center center fixed;
