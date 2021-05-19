@@ -54,7 +54,6 @@ namespace CognitiveServicesDemo.TextToSpeech.Services
                 }
                 finally
                 {
-                    // Dispose the current instance
                     Dispose();
                 }
             }
