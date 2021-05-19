@@ -98,7 +98,7 @@ export const App = () => {
             </p>
           </div>
         </header>
-        <div className="row py-3">
+        <div className="row py-3 adjustments">
           <div className="col-6">
             {showLanguageSettings ? (
               <LanguageSettingsEditor
