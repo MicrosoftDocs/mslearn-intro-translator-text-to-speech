@@ -196,7 +196,21 @@ export const App = () => {
                     </div>
                   </div>
                 </div>
-                <div className="row py-3">
+                <div className="row">
+                  <div className="col">
+                    <button
+                      className="btn btn-primary btn-wide float-right"
+                      type="submit"
+                      disabled={submitting}
+                    >
+                      Translate
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </>
+          </div>
+          <div className="row py-3">
                   <div className="col-6">
                     {showLanguageSettings ? (
                       <LanguageSettingsEditor
@@ -212,20 +226,6 @@ export const App = () => {
                     ) : null}
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col">
-                    <button
-                      className="btn btn-primary btn-wide float-right"
-                      type="submit"
-                      disabled={submitting}
-                    >
-                      Translate
-                    </button>
-                  </div>
-                </div>
-              </form>
-            </>
-          </div>
           <div className="col-6">
             <TranslationResults
               results={translationResults}
