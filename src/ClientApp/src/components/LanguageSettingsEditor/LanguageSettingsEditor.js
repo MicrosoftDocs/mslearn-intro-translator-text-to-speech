@@ -108,16 +108,16 @@ export const LanguageSettingsEditor = ({
   }
 
   const showStyleControl =
-  false;
-   // currentLanguageSetting.voice &&
-  //  currentLanguageSetting.voice.styles !== undefined &&
-  //  currentLanguageSetting.voice.styles.length > 0;
-  const showPitchControl = 
-  false;
- //   currentLanguageSetting.voice.adjustments.pitch !== undefined;
+    currentLanguageSetting.voice &&
+    currentLanguageSetting.voice.styles !== undefined &&
+    currentLanguageSetting.voice.styles.length > 0;
+  const showPitchControl =
+    currentLanguageSetting.voice.adjustments.pitch !== undefined;
   const showRateControl =
-  false;
- //   currentLanguageSetting.voice.adjustments.rate !== undefined;
+    currentLanguageSetting.voice.adjustments.rate !== undefined;
+  console.log(showStyleControl);
+  console.log(showPitchControl);
+  console.log(showRateControl);
   return (
     <div className="LanguageSettingsEditor d-flex flex-row">
       <div className="pr-2">
