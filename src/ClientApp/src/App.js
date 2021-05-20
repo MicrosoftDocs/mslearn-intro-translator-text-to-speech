@@ -16,7 +16,7 @@ import { synthesizeText, getLocales } from "./api";
 import { removeAtIndex, getAdjustmentRangeValue } from "./utility";
 
 export const App = () => {
-  const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(0);
+  const [selectedLanguageIndex, setSelectedLanguageIndex] = useState(undefined);
   const [languageSettings, setLanguageSettings] = useState(
     presetLanguageSettings
   );
@@ -28,7 +28,9 @@ export const App = () => {
 
   const submitting = processingStatus === STATUS.pending;
   const showLanguageSettings =
-    languageSettings.length > 0 && languageSettings[selectedLanguageIndex];
+    selectedLanguageIndex !== undefined &&
+    languageSettings.length > 0 &&
+    languageSettings[selectedLanguageIndex];
 
   const processTextToSpeech = async (text) => {
     try {
@@ -98,22 +100,6 @@ export const App = () => {
             </p>
           </div>
         </header>
-        <div className="row py-3">
-          <div className="col-6">
-            {showLanguageSettings ? (
-              <LanguageSettingsEditor
-                availableLocales={availableLocales}
-                currentLanguageSetting={languageSettings[selectedLanguageIndex]}
-                updateCurrentLanguageSetting={(updatedValue) => {
-                  const updatedSettings = [...languageSettings];
-                  updatedSettings[selectedLanguageIndex] = updatedValue;
-                  setLanguageSettings(updatedSettings);
-                }}
-                submitting={submitting}
-              />
-            ) : null}
-          </div>
-        </div>
         <div className="row py-3">
           <div className="col-6">
             <>
@@ -186,6 +172,30 @@ export const App = () => {
                         />
                       </div>
                     </div>
+                  </div>
+                </div>
+
+                <div className="row">
+                  <div className="col-12">
+                    {showLanguageSettings ? (
+                      <LanguageSettingsEditor
+                        availableLocales={availableLocales}
+                        currentLanguageSetting={
+                          languageSettings[selectedLanguageIndex]
+                        }
+                        updateCurrentLanguageSetting={(updatedValue) => {
+                          const updatedSettings = [...languageSettings];
+                          updatedSettings[selectedLanguageIndex] = updatedValue;
+                          setLanguageSettings(updatedSettings);
+                        }}
+                        submitting={submitting}
+                      />
+                    ) : (
+                      <p>
+                        Click on a language to edit voice settings, or click{" "}
+                        <strong>+ Add new language</strong> to create a new one.
+                      </p>
+                    )}
                   </div>
                 </div>
                 <div className="row py-3">
